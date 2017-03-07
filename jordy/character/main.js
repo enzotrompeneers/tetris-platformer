@@ -1,19 +1,21 @@
 // If you make use of this template setup file or any of the other files in this template project, please link my github profile @RobLui.
 
-// Init the game
+
+//http://www.html5gamedevs.com/topic/12441-kill-sprite-when-touching-bottom-world/
+
 var game = new Phaser.Game(1080, 1920);
 
 var toggle = false;
 var gameStart = false;
 
-// Create the state that will contain the whole game
 var mainState = {
-    //Preload verhuizen naar andere gamestate
     preload: function () {
 
         game.load.spritesheet('character', 'assets/dude.png', 32, 48);
         game.load.image('box', 'assets/blokje 3.jpg');
         game.load.image('background', 'assets/background.jpg');
+        game.load.image('ground', 'assets/bottom.png');
+
         keyT = game.input.keyboard.addKey(Phaser.Keyboard.T);
         keyS = game.input.keyboard.addKey(Phaser.Keyboard.S);
         keyR = game.input.keyboard.addKey(Phaser.Keyboard.R);
@@ -27,7 +29,7 @@ var mainState = {
 
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
-        player = game.add.sprite(0, 0, 'character');
+        player = game.add.sprite(540, 1700, 'character');
         game.physics.arcade.enable(player);
         player.body.bounce.y = 0.2;
         player.scale.setTo(2, 2);
@@ -37,35 +39,39 @@ var mainState = {
         player.animations.add('right', [5, 6, 7, 8], 10, true);
         cursors = game.input.keyboard.createCursorKeys();
 
-        //Group for tetrisblok update function
+        ground = game.add.sprite(0, 1840, 'ground');
+        ground.scale.x = 3;
+        game.physics.arcade.enable(ground);
+        ground.body.immovable = true;
+
+        //Group with body
         tetromino = game.add.group();
+        tetromino.enableBody = true;
+
     },
 
     // Update runs 60 frames/sec
     update: function () {
 
-        if (gameStart = true) {
-            keyT.onDown.add(mainState.toggleControls, this);
-        }
-
+        keyT.onDown.add(mainState.toggleControls, this);
         keyS.onDown.add(mainState.createShape, this);
-        keyR.onDown.add(mainState.rotateShape, this);
 
         this.game.physics.arcade.collide(player, tetromino);
+        this.game.physics.arcade.collide(ground, player);
+        this.game.physics.arcade.collide(ground, tetromino);
         this.game.physics.arcade.collide(tetromino);
 
-        if (toggle == true) {
-            if (cursors.left.isDown) {
-                box1.body.x += -50;
-            } else if (cursors.right.isDown) {
-                box1.body.x += 50;
-            } else if (cursors.down.isDown) {
-                box1.body.y += 50;
-            }
 
+
+        //Move tetris
+        if (toggle == true && gameStart == true) {
+            cursors.down.onDown.add(game.time.events.repeat(Phaser.Timer.SECOND * 1, mainState.moveDown, this), this);
+            cursors.left.onDown.add(game.time.events.repeat(Phaser.Timer.SECOND * 1, mainState.moveLeft, this), this);
+            cursors.right.onDown.add(game.time.events.repeat(Phaser.Timer.SECOND * 1, mainState.moveRight, this), this);
+            keyR.onDown.add(mainState.rotateShape, this);
         }
 
-        //PLAYERSETTINGS
+        //Move Player
         player.body.velocity.x = 0;
 
         if (toggle == false) {
@@ -85,7 +91,6 @@ var mainState = {
                 player.body.velocity.y = -200;
             }
         }
-
     },
 
     toggleControls: function () {
@@ -97,44 +102,59 @@ var mainState = {
             toggle = false;
             console.log("toggle off");
         };
-    },
 
+    },
     createShape: function () {
 
         gameStart = true;
 
-        //BOXES
-        box1 = game.add.sprite(100, 200, 'box');
-        child1 = box1.addChild(game.make.sprite(-25, -75, 'box'));
-        child2 = box1.addChild(game.make.sprite(-25, -125, 'box'));
-        child3 = box1.addChild(game.make.sprite(25, -25, 'box'));
+        tetromino.x = 200;
+        tetromino.y = 200;
 
-        box1.anchor.x = 0.5;
-        box1.anchor.y = 0.5;
+        //Creating shape
+        parent = tetromino.create(200, 200, 'box');
+        parent.anchor.x = 0.5;
+        parent.anchor.y = 0.5;
+        parent.body.immovable = true;
+        parent.body.collideWorldBounds = true;
+        parent.tint = 0xFF0000;
 
-        box1.tint = 0xFF0000;
+        child1 = parent.addChild(tetromino.create(0, -50, 'box'));
+        child1.anchor.x = 0.5;
+        child1.anchor.y = 0.5;
+        child1.body.immovable = true;
+        child1.body.collideWorldBounds = true;
         child1.tint = 0xFF0000;
+
+        child2 = parent.addChild(tetromino.create(0, -100, 'box'));
+        child2.anchor.x = 0.5;
+        child2.anchor.y = 0.5;
+        child2.body.immovable = true;
+        child2.body.collideWorldBounds = true;
         child2.tint = 0xFF0000;
+
+        child3 = parent.addChild(tetromino.create(50, 0, 'box'));
+        child3.anchor.x = 0.5;
+        child3.anchor.y = 0.5;
+        child3.body.immovable = true;
+        child3.body.collideWorldBounds = true;
         child3.tint = 0xFF0000;
 
-        game.physics.arcade.enable(box1);
-
-        box1.body.collideWorldBounds = true;
-        box1.body.immovable = true;
-        child1.enableBody = true;
-        child2.enableBody = true;
-        child3.enableBody = true;
-
-        tetromino.add(box1);
-
+    },
+    rotateShape: function () {
+        parent.angle += 90;
+    },
+    moveLeft: function () {
+        parent.x += -50;
+    },
+    moveRight: function () {
+        parent.x += 50;
+    },
+    moveDown: function () {
+        parent.y += 50;
     },
 
-    rotateShape: function () {
-        box1.angle += 90;
-    }
 };
 
-// Add the mainState
 game.state.add('main', mainState);
-// Start the game
 game.state.start('main');
