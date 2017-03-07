@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="630fcd75-146b-4d90-9775-13f6a1281073" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/yawuar/character/char.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/yawuar/character/character.psd" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/yawuar/character/charv02.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/yawuar/character/charv03.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/yawuar/swipe-controls/swipe-controls.zip" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/yawuar/swipe-controls/swipe-controls/www/js/index.js" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-    </list>
+    <list default="true" id="630fcd75-146b-4d90-9775-13f6a1281073" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -195,12 +187,12 @@
       <workItem from="1488806016133" duration="472000" />
       <workItem from="1488835390244" duration="552000" />
       <workItem from="1488875557414" duration="8471000" />
-      <workItem from="1488899418806" duration="885000" />
+      <workItem from="1488899418806" duration="951000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="10797000" />
+    <option name="totallyTimeSpent" value="10863000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
