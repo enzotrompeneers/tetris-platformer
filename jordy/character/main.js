@@ -39,7 +39,7 @@ var mainState = {
         player.animations.add('right', [5, 6, 7, 8], 10, true);
         cursors = game.input.keyboard.createCursorKeys();
 
-        ground = game.add.sprite(0, 1840, 'ground');
+        ground = game.add.sprite(0, 1838, 'ground');
         ground.scale.x = 3;
         game.physics.arcade.enable(ground);
         ground.body.immovable = true;
@@ -65,9 +65,9 @@ var mainState = {
 
         //Move tetris
         if (toggle == true && gameStart == true) {
-            cursors.down.onDown.add(game.time.events.repeat(Phaser.Timer.SECOND * 1, mainState.moveDown, this), this);
-            cursors.left.onDown.add(game.time.events.repeat(Phaser.Timer.SECOND * 1, mainState.moveLeft, this), this);
-            cursors.right.onDown.add(game.time.events.repeat(Phaser.Timer.SECOND * 1, mainState.moveRight, this), this);
+            cursors.down.onDown.add(mainState.moveDown, this);
+            cursors.left.onDown.add(mainState.moveLeft, this);
+            cursors.right.onDown.add(mainState.moveRight, this);
             keyR.onDown.add(mainState.rotateShape, this);
         }
 
@@ -75,7 +75,6 @@ var mainState = {
         player.body.velocity.x = 0;
 
         if (toggle == false) {
-
             if (cursors.left.isDown) {
                 player.body.velocity.x = -150;
                 player.animations.play('left');
