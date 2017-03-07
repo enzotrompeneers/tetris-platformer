@@ -37,7 +37,13 @@ var gameOverState = false;
 //Adrian's code
 var player;
 var platforms;
-var allowPlayerMove;
+var allowPlayerMove = false;
+var allowTimeToMove = 300;
+var timeMoving = 0;
+var fallenTetrominoes = 0;
+var door;
+var linesNeededToOpenDoor = 2;
+var doorOpened = false;
 
 
 // the positions of each block of a tetromino with respect to its center (in cell coordinates)
@@ -150,7 +156,12 @@ Game.preload = function() {
     game.load.audio('win','assets/sound/win.mp3','assets/sound/win.ogg');
     game.load.audio('gameover','assets/sound/gameover.mp3','assets/sound/gameover.ogg');
 
-    game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+
+    //adrian's code
+    //game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+    game.load.spritesheet('dude', 'assets/charv03.png', 50, 64);
+    game.load.spritesheet('door','assets/door_spritesheet.png', 60,64)
+    //end of code
 };
 
 Game.create = function(){
@@ -181,11 +192,19 @@ Game.create = function(){
     player.body.bounce.y = 0.2;
     player.body.gravity.y = 300;
     player.body.collideWorldBounds = true;
+    //player.animations.add('left', [0, 1, 2, 3], 10, true);
+    //player.animations.add('right', [5, 6, 7, 8], 10, true);
     player.animations.add('left', [0, 1, 2, 3], 10, true);
     player.animations.add('right', [5, 6, 7, 8], 10, true);
+    player.frame = 4;
 
     platforms = game.add.group();
     platforms.enableBody = true;
+
+    door = game.add.sprite(300, 400, 'door');
+    game.physics.arcade.enable(door);
+    door.body.immovable = true;
+    door.animations.add('open', [0,1,2,3,4,5,6,7,8,9], 10, false);
     //platforms.enableBody = true;
 
     //end my code
@@ -263,7 +282,31 @@ function updateScore(){
     linesText.text = completedLines;
     alignText();
     updateTimer();
+
+    //adrian's code
+    if (completedLines >= linesNeededToOpenDoor && !doorOpened){
+        doorOpened = true;
+        openDoor();
+    }
+
+    //end of code
 }
+
+//adrian's code
+
+function openDoor(){
+    door.animations.play('open');
+}
+
+function enterDoor(){
+    console.log("touchingdoor");
+    if (doorOpened) {
+        console.log("congrats!");
+    }
+
+}
+
+//end of code
 
 function updateTimer(){
     if(completedLines%linesThreshold == 0){
@@ -503,10 +546,26 @@ function fall(){
             sceneSprites[tetromino.cells[i][0]][tetromino.cells[i][1]] = tetromino.sprites[i];
         }
         checkLines(lines); // check if lines are completed
-        manageTetrominos(); // spawn a new tetromino and update the next one
-        
-        
+
+
+        //adrian's code
         console.log("fallen");
+
+        fallenTetrominoes += 1;
+        console.log(fallenTetrominoes);
+
+        if (fallenTetrominoes >= 3) {
+            allowPlayerMove = true;
+        } else {
+            manageTetrominos();
+        }
+        
+        
+
+        //end of code
+
+
+        //manageTetrominos(); // spawn a new tetromino and update the next one
 
     }
 }
@@ -549,38 +608,52 @@ function gameOver(){
 
 Game.update = function(){
     //Adrian's code
-    player.body.velocity.x = 0;
-    if (cursors.left.isDown)
-    {
-        //  Move to the left
-        player.body.velocity.x = -150;
 
-        player.animations.play('left');
-    }
-    else if (cursors.right.isDown)
-    {
-        //  Move to the right
-        player.body.velocity.x = 150;
-
-        player.animations.play('right');
-    }
-    else
-    {
-        //  Stand still
+    
+    if (timeMoving >= allowTimeToMove) {
+        allowPlayerMove = false;
+        timeMoving = 0;
+        fallenTetrominoes = -1;
         player.animations.stop();
-
         player.frame = 4;
     }
 
+    player.body.velocity.x = 0;
     game.physics.arcade.collide(player, platforms);
 
-    //console.log(player.body.velocity.y);
-    if (cursors.up.isDown && player.body.touching.down)
-    {
-        player.body.velocity.y = -230;
-    }
+    game.physics.arcade.collide(player, door, enterDoor);
 
-    
+    if (allowPlayerMove) {
+        timeMoving++;
+
+        if (cursors.left.isDown)
+        {
+            //  Move to the left
+            player.body.velocity.x = -150;
+
+            player.animations.play('left');
+        }
+        else if (cursors.right.isDown)
+        {
+            //  Move to the right
+            player.body.velocity.x = 150;
+
+            player.animations.play('right');
+        }
+        else
+        {
+            //  Stand still
+            player.animations.stop();
+
+            player.frame = 4;
+        }
+
+        //console.log(player.body.velocity.y);
+        if (cursors.up.isDown && player.body.touching.down)
+        {
+            player.body.velocity.y = -230;
+        }
+    }
     //Stop my code
 
 
