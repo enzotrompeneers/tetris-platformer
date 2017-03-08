@@ -8,8 +8,8 @@ var Game = {};
 var blocksPerTetromino = 4;
 var nbBlockTypes = 7; // 7 possible tetrominoes
 var blockSize = 32; // px
-var numBlocksY = 19; // make the grid 19 blocks high
-var numBlocksX = 19; // make the grid 19 blocks wide
+var numBlocksY = 32; // make the grid 19 blocks high
+var numBlocksX = 18; // make the grid 19 blocks wide
 
 var gameWidth = numBlocksX*blockSize; // width of the grid in pixels
 var menuWidth = 0; //adri's changed to 0. default = 300

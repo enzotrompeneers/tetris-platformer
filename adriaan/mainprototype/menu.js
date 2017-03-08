@@ -13,6 +13,15 @@ Menu.preload = function(){
     game.load.bitmapFont('desyrel', 'assets/fonts/desyrel.png', 'assets/fonts/desyrel.xml');
     game.load.spritesheet('button', 'assets/start.png', 201, 71);
     game.load.audio('music','assets/sound/tetris.mp3'); // load music now so it's loaded by the time the game starts
+
+    //adri's code for main menu
+    game.load.spritesheet('joystick','assets/joysticks_loop.png', 200,200)
+
+    game.load.spritesheet('knopA','assets/knop_a_in_kleur_loop.png', 100,100)
+    game.load.spritesheet('knopB','assets/knop_b_in_kleur_loop.png', 100,100)
+    
+
+    //end code
 };
 
 Menu.create = function(){
@@ -20,8 +29,24 @@ Menu.create = function(){
     welcome.anchor.setTo(0.5);
     placeSeparators();
     startButton(1);
+    //commented out by adri & code by adri
     //document.getElementById('keys').style.display = "flex";
     //document.getElementById('cup').style.display = "block";
+
+    joystick = game.add.sprite(200, game.world.height - 200, 'joystick');
+    //joystick.scale.setTo(1.5,1.5);
+    joystick.animations.add('wiggle', [0,1,2,1,0,3,4,3], 10, true);
+    joystick.animations.play('wiggle');
+
+    knopA = game.add.sprite(400, game.world.height - 400, 'knopA');
+    knopB = game.add.sprite(400, game.world.height - 600, 'knopB');
+
+    knopA.animations.add('wiggle', [0,1], 2, true);
+    knopA.animations.play('wiggle');
+    knopB.animations.add('wiggle', [0,1], 2, true);
+    knopB.animations.play('wiggle');
+    
+    //end code
 };
 
 Menu.shutdown = function(){
