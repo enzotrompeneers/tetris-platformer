@@ -11,7 +11,7 @@ var blockSize = 64; // px
 var numBlocksY = 16; // make the grid 28 blocks high
 var numBlocksX = 12; // make the grid 18 blocks wide
 
-var gameWidth = numBlocksX*blockSize; // width of the grid in pixels (=768x1544)
+var gameWidth = numBlocksX*blockSize; // width of the grid in pixels (=768x1344)
 //var gameWidth = 576
 var menuWidth = 0; //adri's changed to 0. default = 300
 
@@ -40,7 +40,7 @@ var player;
 var platforms;
 var allowPlayerMove = false;
 var allowTimeToMove = 300;
-var playerJumpHeight = -400;
+var playerJumpHeight = -450;
 var timeMoving = 0;
 var fallenTetrominoes = 0;
 var door;
@@ -164,7 +164,7 @@ Game.preload = function() {
 
     //adrian's code
     //game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
-    game.load.image('background', 'assets/game_2.jpg');
+    game.load.image('background', 'assets/game_2.png');
     game.load.spritesheet('dude', 'assets/charv03.png', 50, 64);
     game.load.spritesheet('door','assets/door_spritesheet.png', 60,64);
     //end of code
@@ -173,12 +173,23 @@ Game.preload = function() {
 Game.create = function(){
     //adri adding background & control panel
     background = game.add.sprite(0,0,'background');
-    background.scale.setTo(0.7,0.7);
+    background.scale.setTo(0.71,0.7);
 
-    joystick = game.add.sprite(200, game.world.height - 200, 'joystick');
-    //joystick.scale.setTo(1.5,1.5);
-    //joystick.animations.add('wiggle', [0,1,2,1,0,3,4,3], 10, true);
-    //joystick.animations.play('wiggle');
+    joystick = game.add.sprite(75, game.world.height - 275, 'joystick');
+    joystick.scale.setTo(1.4,1.4);
+    joystick.animations.add('wiggle', [0,1,2,1,0,3,4,3], 2, true);
+    joystick.animations.play('wiggle');
+
+
+    knopA = game.add.sprite(445, game.world.height - 255, 'knopA');
+    knopA.scale.setTo(1.3,1.3);
+    knopB = game.add.sprite(600, game.world.height - 260, 'knopB');
+    knopB.scale.setTo(1.35,1.35);
+
+    knopA.animations.add('wiggle', [0,1], 2, true);
+    knopA.animations.play('wiggle');
+    knopB.animations.add('wiggle', [0,1], 2, true);
+    knopB.animations.play('wiggle');
 
     // swipe controls => Yawuar
     currentX = game.input.activePointer.x;
@@ -210,7 +221,7 @@ Game.create = function(){
     player.scale.setTo(2,2);
     game.physics.arcade.enable(player);
     player.body.bounce.y = 0.2;
-    player.body.gravity.y = 500;
+    player.body.gravity.y = 600;
     player.body.collideWorldBounds = true;
     //player.animations.add('left', [0, 1, 2, 3], 10, true);
     //player.animations.add('right', [5, 6, 7, 8], 10, true);
