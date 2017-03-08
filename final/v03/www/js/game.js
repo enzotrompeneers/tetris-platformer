@@ -321,6 +321,9 @@ Game.create = function(){
     Game.radio.music.loopFull();
 
     loop.delay -= speedUp*5;
+
+    //adri
+    game.scale.startFullScreen(false);
 };
 
 
