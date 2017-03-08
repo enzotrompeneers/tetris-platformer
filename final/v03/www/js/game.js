@@ -181,10 +181,10 @@ Game.create = function(){
     joystick.animations.play('wiggle');
 
 
-    knopA = game.add.sprite(445, game.world.height - 255, 'knopA');
+    knopA = game.add.sprite(450, game.world.height - 255, 'knopA');
     knopA.scale.setTo(1.3,1.3);
-    knopB = game.add.sprite(600, game.world.height - 260, 'knopB');
-    knopB.scale.setTo(1.35,1.35);
+    knopB = game.add.sprite(602, game.world.height - 255, 'knopB');
+    knopB.scale.setTo(1.3,1.3);
 
     knopA.animations.add('wiggle', [0,1], 2, true);
     knopA.animations.play('wiggle');
