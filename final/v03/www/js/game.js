@@ -164,16 +164,22 @@ Game.preload = function() {
 
     //adrian's code
     //game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
-    game.load.image('background', 'assets/game.png');
+    game.load.image('background', 'assets/game_2.jpg');
     game.load.spritesheet('dude', 'assets/charv03.png', 50, 64);
     game.load.spritesheet('door','assets/door_spritesheet.png', 60,64);
     //end of code
 };
 
 Game.create = function(){
-    //adri adding background
+    //adri adding background & control panel
     background = game.add.sprite(0,0,'background');
     background.scale.setTo(0.7,0.7);
+
+    joystick = game.add.sprite(200, game.world.height - 200, 'joystick');
+    //joystick.scale.setTo(1.5,1.5);
+    //joystick.animations.add('wiggle', [0,1,2,1,0,3,4,3], 10, true);
+    //joystick.animations.play('wiggle');
+
     // swipe controls => Yawuar
     currentX = game.input.activePointer.x;
     //end
