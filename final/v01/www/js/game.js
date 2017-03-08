@@ -8,8 +8,8 @@ var Game = {};
 var blocksPerTetromino = 4;
 var nbBlockTypes = 7; // 7 possible tetrominoes
 var blockSize = 32; // px
-var numBlocksY = 19; // make the grid 19 blocks high
-var numBlocksX = 19; // make the grid 19 blocks wide
+var numBlocksY = 32; // make the grid 19 blocks high
+var numBlocksX = 18; // make the grid 19 blocks wide
 
 var gameWidth = numBlocksX*blockSize; // width of the grid in pixels
 var menuWidth = 0; //adri's changed to 0. default = 300
@@ -44,6 +44,8 @@ var fallenTetrominoes = 0;
 var door;
 var linesNeededToOpenDoor = 2;
 var doorOpened = false;
+
+// Swipe controls => Yawuar
 var currentX = 0;
 
 
@@ -166,6 +168,7 @@ Game.preload = function() {
 };
 
 Game.create = function(){
+    // swipe controls => Yawuar
     currentX = game.input.activePointer.x;
     // 2D array of numBlocksX*numBlocksY cells corresponding to the playable scene; will contains 0 for empty, 1 if there is already
     // a block from the current tetromino, and 2 if there is a block from a fallen tetromino
