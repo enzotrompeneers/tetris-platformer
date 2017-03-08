@@ -10,7 +10,6 @@ var mainState = {
     create: function() {
         currentX = game.input.activePointer.x;
 
-        this.swipe = new Swipe(this.game);
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
         player = game.add.sprite(32, game.world.height - 64, 'char');

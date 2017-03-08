@@ -1,28 +1,23 @@
-var game = new Phaser.Game(800, 600);
+(function() {
+    var game = new Phaser.Game(800, 600, Phaser.AUTO, '', {preload: preload, create: create, update: update });
 
-var currentX = 0;
+    var currentX = 0;
 
-var mainState = {
-    preload: function() {
+    function preload() {
         game.load.spritesheet('char', 'assets/charv03.png', 50, 64);
-    },
+    }
 
-    create: function() {
+    function create() {
         currentX = game.input.activePointer.x;
-
         this.swipe = new Swipe(this.game);
         game.physics.startSystem(Phaser.Physics.ARCADE);
-
-        player = game.add.sprite(32, game.world.height - 64, 'char');
-
-
+        player = game.add.sprite(0, game.world.height - 64, 'char');
         game.physics.arcade.enable(player);
-
         player.animations.add('left', [0, 1, 2, 3], 10, true);
         player.animations.add('right', [5, 6, 7, 8], 10, true);
-    },
+    }
 
-    update: function() {
+    function update() {
         var direction = this.swipe.check();
         if(game.input.activePointer.isDown) {
             var left = game.input.activePointer.x;
@@ -38,7 +33,7 @@ var mainState = {
             } else {
 
             }
-            // set the current X value to the left value
+
             currentX = left;
 
         } else if(game.input.activePointer.isUp) {
@@ -47,8 +42,4 @@ var mainState = {
             player.body.velocity.x = 0;
         }
     }
-};
-
-game.state.add('main', mainState);
-
-game.state.start('main');
+})();
