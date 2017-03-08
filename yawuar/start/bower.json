@@ -1,0 +1,29 @@
+{
+  "name": "swipe-controls",
+  "description": "swipe controls in phaser",
+  "main": "index.html",
+  "authors": [
+    "yawuar"
+  ],
+  "license": "ISC",
+  "keywords": [
+    "phaser",
+    "swipe",
+    "controls"
+  ],
+  "homepage": "https://github.com/yawuar/BootcampMikado",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "phaser": "^2.6.2"
+  },
+  "devDependencies": {
+    "phaser": "^2.6.2",
+    "phaser-swipe": "^1.0.4"
+  }
+}
