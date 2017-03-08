@@ -844,7 +844,6 @@ Game.update = function () {
     }
 };
 
-
 //***JORDY****
 
 function lifeCounter() {
@@ -852,6 +851,7 @@ function lifeCounter() {
     //game.state.start('Game over',true,false);
 
     if (life > 0) {
+        
         life -= 1;
 
         if (door.x >= game.world.centerX) {
