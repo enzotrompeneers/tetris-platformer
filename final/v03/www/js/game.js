@@ -173,23 +173,27 @@ Game.preload = function() {
 Game.create = function(){
     //adri adding background & control panel
     background = game.add.sprite(0,0,'background');
-    background.scale.setTo(0.71,0.7);
+    background.scale.setTo(0.71,0.7); 
 
     joystick = game.add.sprite(75, game.world.height - 275, 'joystick');
     joystick.scale.setTo(1.4,1.4);
+
+    joystick.animations.add('moveLeft', [0,1,2],10,false);
+    joystick.animations.add('moveRight', [0,3,4],10,false);
+
     joystick.animations.add('wiggle', [0,1,2,1,0,3,4,3], 2, true);
-    joystick.animations.play('wiggle');
+    //joystick.animations.play('wiggle');
 
 
-    knopA = game.add.sprite(450, game.world.height - 255, 'knopA');
-    knopA.scale.setTo(1.3,1.3);
-    knopB = game.add.sprite(602, game.world.height - 255, 'knopB');
-    knopB.scale.setTo(1.3,1.3);
+    buttonA = game.add.sprite(450, game.world.height - 255, 'knopA');
+    buttonA.scale.setTo(1.3,1.3);
+    buttonB = game.add.sprite(602, game.world.height - 255, 'knopB');
+    buttonB.scale.setTo(1.3,1.3);
 
-    knopA.animations.add('wiggle', [0,1], 2, true);
-    knopA.animations.play('wiggle');
-    knopB.animations.add('wiggle', [0,1], 2, true);
-    knopB.animations.play('wiggle');
+    buttonA.animations.add('wiggle', [0,1], 2, true);
+    //knopA.animations.play('wiggle');
+    buttonB.animations.add('wiggle', [0,1], 2, true);
+    //knopB.animations.play('wiggle');
 
     // swipe controls => Yawuar
     currentX = game.input.activePointer.x;
@@ -239,12 +243,14 @@ Game.create = function(){
     door.animations.add('open', [0,1,2,3,4,5,6,7,8,9], 10, false);
     //platforms.enableBody = true;
 
-    //adding invisible button
-    //define you regionvar
-    invisibleButtonA = new Phaser.Rectangle(0,0,game.width,game.height/2)
-    invisibleButtonB = new Phaser.Rectangle(0,game.height/2,game.width,game.height/2)
+    //adding invisible buttons
+    invisibleButtonLeft = new Phaser.Rectangle(0, game.world.height - 320,220,320);
+    invisibleButtonRight = new Phaser.Rectangle(220, game.world.height - 320,220,300);
+
+    invisibleButtonA = new Phaser.Rectangle(450, game.world.height - 255,130,130);
+    invisibleButtonB = new Phaser.Rectangle(602, game.world.height - 255,130,130);
     //listen for pointers
-    game.input.onDown.add(handlePointerDown)
+    game.input.onDown.add(handlePointerDown);
 
     //end my code
 
@@ -258,7 +264,8 @@ Game.create = function(){
 
     //adrian's code
     //game.add.tileSprite(0,game.world.height-blockSize,gameWidth,blockSize,'blocks',0); // ground
-    var ground = game.add.tileSprite(0,game.world.height-blockSize-256,gameWidth,blockSize,'blocks',7); // ground
+    var ground = game.add.tileSprite(0,game.world.height-blockSize-256,gameWidth,blockSize,'blocks',1); // ground
+    ground.alpha = 0;
     platforms.add(ground);
     ground.body.immovable = true;
 
@@ -316,33 +323,59 @@ Game.create = function(){
     loop.delay -= speedUp*5;
 };
 
+
 //adrian's code
 //handle a touch/click
 handlePointerDown = function(pointer){
-    //this is the test, contains test for a point belonging to a rect definition
     var insideA = invisibleButtonA.contains(pointer.x,pointer.y)
     var insideB = invisibleButtonB.contains(pointer.x,pointer.y)
-    //do whatever with the result
-    //console.log('pointer is inside region top left quarter', inside)
 
-    if (player.body.touching.down && allowPlayerMove){
-        player.body.velocity.y = playerJumpHeight;
+    var insideLeft = invisibleButtonLeft.contains(pointer.x,pointer.y)
+    var insideRight = invisibleButtonRight.contains(pointer.x,pointer.y)
+
+    if (insideLeft) {
+        joystick.animations.play('moveLeft');
+        if (allowPlayerMove) {
+            //moving player left
+            player.body.velocity.x = -150;
+            player.animations.play('left');
+        } else {
+            //moving block left
+            if(canMove(slide,"left")){
+            move(slide,slideCenter,"left",1);
+            }
+        }
+    }
+    
+    if (insideRight) {
+        //moving player right
+        joystick.animations.play('moveRight');
+        if (allowPlayerMove) {
+            //moving player right
+            player.body.velocity.x = 150;
+            player.animations.play('right');
+        } else {
+            //moving block right
+            if(canMove(slide,"right")){
+            move(slide,slideCenter,"right",1);
+            }
+        }
     }
 
-    if (!allowPlayerMove && insideA) {
+    if (insideA && !allowPlayerMove) {
         if(canMove(rotate,"clockwise")){
-            move(rotate,null,"clockwise",1);
-        }else{
-            //console.log('Cannot rotate');
+            move(rotate,null,"clockwise",1); //rotate block
         }
+    }else if (insideA && allowPlayerMove && player.body.touching.down){
+            player.body.velocity.y = playerJumpHeight; //jump player
     }
 
-    if (!allowPlayerMove && insideB) {
+    if (insideB && !allowPlayerMove) {
         if(canMove(slide,"down")){
-            move(slide,slideCenter,"down",1);
-        }else{
-            //console.log('Cannot slide down');
+            move(slide,slideCenter,"down",1); //slide block down 1
         }
+    }else if(insideB && allowPlayerMove){
+            //use powerup
     }
 } 
 //end of adrian's code
@@ -685,6 +718,14 @@ function gameOver(){
 Game.update = function(){
     //Adrian's code
 
+    //resetting buttons
+    if (!game.input.activePointer.isDown) {
+        joystick.frame = 0;
+
+        player.body.velocity.x = 0;
+        player.animations.stop();
+        player.frame = 4;
+    }
     
     if (timeMoving >= allowTimeToMove) {
         allowPlayerMove = false;
@@ -694,7 +735,7 @@ Game.update = function(){
         player.frame = 4;
     }
 
-    player.body.velocity.x = 0;
+    
     game.physics.arcade.collide(player, platforms);
 
     game.physics.arcade.collide(player, door, enterDoor);
@@ -729,6 +770,8 @@ Game.update = function(){
             player.frame = 4;
         }*/
 
+
+        /*
         if(game.input.activePointer.isDown) {
             var left = game.input.activePointer.x;
             var pos = left - currentX;
@@ -756,7 +799,10 @@ Game.update = function(){
         if (cursors.up.isDown && player.body.touching.down)
         {
             player.body.velocity.y = playerJumpHeight;
-        }
+        }*/
+    } else {
+        player.body.velocity.x = 0;
+        player.frame = 4;
     }
 
 
@@ -770,7 +816,7 @@ Game.update = function(){
         }
 
         /* Swipe controls => Yawuar */
-
+        /*
         if(game.input.activePointer.isDown) {
             var left = game.input.activePointer.x;
             var pos = left - currentX;
@@ -786,7 +832,7 @@ Game.update = function(){
             // set the current X value to the left value
             currentX = left;
 
-        }
+        }*/
 
         /*if (cursors.left.isDown)
         {
@@ -801,6 +847,7 @@ Game.update = function(){
             }
         }*/
 
+        /*
         if (cursors.down.isDown)
         {
             if(canMove(slide,"down")){
@@ -824,6 +871,7 @@ Game.update = function(){
             }
         }
         currentMovementTimer = 0;
+        */
     }
 };
 
