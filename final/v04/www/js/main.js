@@ -18,13 +18,6 @@ function placeSeparators(){
     rightSeparator.lineTo(0,game.world.height);
 }
 
-//Place the start button that shows up on the menu screen and on the leaderboard
-function startButton(pos){ // pos = 1 : display on menu sreen, pos = 2: display on leaderboard
-    var y = (pos == 1 ? 400 : 550);
-    var button = game.add.button(game.world.centerX, y, 'button', startGame, this, 2, 1, 0);
-    button.anchor.setTo(0.5);
-}
-
 function startGame(){
     game.state.start('Game');
     

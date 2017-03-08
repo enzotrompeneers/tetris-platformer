@@ -5,6 +5,7 @@
 
 
 var Menu = {};
+var textWidth = 0;
 
 Menu.preload = function(){
     //adri's scale to device (credit to enzo bby)
@@ -14,49 +15,57 @@ Menu.preload = function(){
     game.load.bitmapFont('gameover', 'assets/fonts/gameover.png', 'assets/fonts/gameover.fnt');
     game.load.bitmapFont('videogame', 'assets/fonts/videogame.png', 'assets/fonts/videogame.fnt'); // converted from ttf using http://kvazars.com/littera/
     game.load.bitmapFont('desyrel', 'assets/fonts/desyrel.png', 'assets/fonts/desyrel.xml');
-    game.load.spritesheet('button', 'assets/start.png', 201, 71);
     game.load.audio('music','assets/sound/tetris.mp3'); // load music now so it's loaded by the time the game starts
 
-    //adri's code for main menu
-    game.load.spritesheet('joystick','assets/joysticks_loop.png', 200,200)
-
+    // load background image by Yawuar
     game.load.image('bg', 'assets/background.jpg');
 
-    game.load.spritesheet('knopA','assets/knop_a_in_kleur_loop.png', 100,100)
-    game.load.spritesheet('knopB','assets/knop_b_in_kleur_loop.png', 100,100)
+    // load settings btn
+    game.load.image('settings', 'assets/settings.png');
+    
+    // load font
+    game.load.script('classic-arcade', '//cdnjs.cloudflare.com/ajax/libs/webfont/1.6.27/webfontloader.js');
     
 
     //end code
 };
 
 Menu.create = function(){
-    var welcome = game.add.bitmapText(game.world.centerX, 100, 'gameover', 'tetris platform',64);
-    welcome.anchor.setTo(0.5);
     placeSeparators();
-    startButton(1);
+    //startButton(1);
     //commented out by adri & code by adri
     //document.getElementById('keys').style.display = "flex";
     //document.getElementById('cup').style.display = "block";
 
 
+    // add bg image and check the difference of width and height => done by Yawuar
     var bg = game.add.tileSprite(0, 0, 768, 1344, 'bg');
     var differWidth = game.world.width / bg.width;
     var differHeight = game.world.height / bg.height;
     bg.scale.setTo(differWidth, differHeight);
+    bg.alpha = 0.2;
 
-    joystick = game.add.sprite(200, game.world.height - 200, 'joystick');
-    //joystick.scale.setTo(1.5,1.5);
-    joystick.animations.add('wiggle', [0,1,2,1,0,3,4,3], 10, true);
-    joystick.animations.play('wiggle');
+    // check if game is pressed and start game
+    game.input.onDown.add(startGame, this);
+    var title = {
+        font: '75px arcade', color: '#ffffff',
+        fill: '#ffffff',
+        align: 'center'
+    };
+    var start = {
+        font: '38px arcade', color: '#ffffff',
+        fill: '#ffffff',
+        align: 'center'
+    };
+    // title
+    game.add.text(game.world.width / 2 - 165, game.world.height / 2 - 73, "tetris\nplatform", title);
+    // press to start
 
-    knopA = game.add.sprite(400, game.world.height - 400, 'knopA');
-    knopB = game.add.sprite(400, game.world.height - 600, 'knopB');
+    game.add.text(game.world.width / 2 - 135.5, game.world.height - 100, "press  to  start", start);
 
-    knopA.animations.add('wiggle', [0,1], 2, true);
-    knopA.animations.play('wiggle');
-    knopB.animations.add('wiggle', [0,1], 2, true);
-    knopB.animations.play('wiggle');
-    
+    var settings = game.add.sprite(game.world.width - 70, 15, 'settings');
+    settings.scale.setTo(0.7);
+
     //end code
 };
 
