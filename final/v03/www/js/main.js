@@ -1,7 +1,7 @@
 // TODO : comments, organize code
 
 //noinspection JSCheckFunctionSignatures,JSCheckFunctionSignatures,JSCheckFunctionSignatures
-var game = new Phaser.Game(gameWidth+menuWidth, numBlocksY*blockSize+blockSize+200, Phaser.AUTO, document.getElementById('game'));
+var game = new Phaser.Game(gameWidth+menuWidth, numBlocksY*blockSize+blockSize+256, Phaser.AUTO, document.getElementById('game'));
 game.state.add('Menu',Menu);
 game.state.add('Game',Game);
 game.state.add('Leaderboard',Leaderboard);
@@ -33,5 +33,3 @@ function startGame(){
 function loadLeaderboard(){
     game.state.start('Leaderboard');
 }
-
-

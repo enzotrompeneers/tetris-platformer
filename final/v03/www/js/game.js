@@ -8,10 +8,10 @@ var Game = {};
 var blocksPerTetromino = 4;
 var nbBlockTypes = 7; // 7 possible tetrominoes
 var blockSize = 64; // px
-var numBlocksY = 20; // make the grid 28 blocks high
+var numBlocksY = 16; // make the grid 28 blocks high
 var numBlocksX = 12; // make the grid 18 blocks wide
 
-var gameWidth = numBlocksX*blockSize; // width of the grid in pixels
+var gameWidth = numBlocksX*blockSize; // width of the grid in pixels (=768x1544)
 //var gameWidth = 576
 var menuWidth = 0; //adri's changed to 0. default = 300
 
@@ -164,14 +164,20 @@ Game.preload = function() {
 
     //adrian's code
     //game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
+    game.load.image('background', 'assets/game.png');
     game.load.spritesheet('dude', 'assets/charv03.png', 50, 64);
-    game.load.spritesheet('door','assets/door_spritesheet.png', 60,64)
+    game.load.spritesheet('door','assets/door_spritesheet.png', 60,64);
     //end of code
 };
 
 Game.create = function(){
+    //adri adding background
+    background = game.add.sprite(0,0,'background');
+    background.scale.setTo(0.7,0.7);
     // swipe controls => Yawuar
     currentX = game.input.activePointer.x;
+    //end
+
     // 2D array of numBlocksX*numBlocksY cells corresponding to the playable scene; will contains 0 for empty, 1 if there is already
     // a block from the current tetromino, and 2 if there is a block from a fallen tetromino
     scene = [];
@@ -194,7 +200,7 @@ Game.create = function(){
 
     //Adrian's code
     game.physics.startSystem(Phaser.Physics.ARCADE);
-    player = game.add.sprite(32, game.world.height - 400, 'dude');
+    player = game.add.sprite(32, game.world.height - 800, 'dude');
     player.scale.setTo(2,2);
     game.physics.arcade.enable(player);
     player.body.bounce.y = 0.2;
@@ -235,7 +241,7 @@ Game.create = function(){
 
     //adrian's code
     //game.add.tileSprite(0,game.world.height-blockSize,gameWidth,blockSize,'blocks',0); // ground
-    var ground = game.add.tileSprite(0,game.world.height-blockSize-200,gameWidth,blockSize,'blocks',7); // ground
+    var ground = game.add.tileSprite(0,game.world.height-blockSize-256,gameWidth,blockSize,'blocks',7); // ground
     platforms.add(ground);
     ground.body.immovable = true;
 
