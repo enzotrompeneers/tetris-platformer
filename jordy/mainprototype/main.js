@@ -33,5 +33,3 @@ function startGame(){
 function loadLeaderboard(){
     game.state.start('Leaderboard');
 }
-
-
