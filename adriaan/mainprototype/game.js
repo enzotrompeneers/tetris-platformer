@@ -12,7 +12,7 @@ var numBlocksY = 19; // make the grid 19 blocks high
 var numBlocksX = 19; // make the grid 19 blocks wide
 
 var gameWidth = numBlocksX*blockSize; // width of the grid in pixels
-var menuWidth = 300;
+var menuWidth = 0; //adri's changed to 0. default = 300
 
 var movementLag = 100; // Delay in ms below which two consecutive key presses are counted as the same one (to avoid super fast movement)
 
@@ -226,9 +226,10 @@ Game.create = function(){
     //end my code
 
     // Sound on/off icon
-    var sound = game.add.sprite(game.world.width-38, 0, 'sound', 0);
-    sound.inputEnabled = true;
-    sound.events.onInputDown.add(Game.radio.manageSound, this);
+    //commented out by adrian
+    //var sound = game.add.sprite(game.world.width-38, 0, 'sound', 0);
+    //sound.inputEnabled = true;
+    //sound.events.onInputDown.add(Game.radio.manageSound, this);
 
     // Text for the score, number of lines, next tetromino
     scoreTitle = game.add.bitmapText(gameWidth+50, 0, 'desyrel', 'Score',64);
@@ -603,7 +604,8 @@ function gameOver(){
     var gameover = game.add.bitmapText(game.world.centerX, game.world.centerY, 'gameover', 'GAME OVER',64);
     gameover.anchor.setTo(0.5);
     // Display the form to input your name for the leaderboard
-    document.getElementById("name").style.display =  "block";
+    //commented out by adrian
+    //document.getElementById("name").style.display =  "block";
 }
 
 Game.update = function(){

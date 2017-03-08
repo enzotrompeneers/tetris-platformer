@@ -20,8 +20,8 @@ Menu.create = function(){
     welcome.anchor.setTo(0.5);
     placeSeparators();
     startButton(1);
-    document.getElementById('keys').style.display = "flex";
-    document.getElementById('cup').style.display = "block";
+    //document.getElementById('keys').style.display = "flex";
+    //document.getElementById('cup').style.display = "block";
 };
 
 Menu.shutdown = function(){
