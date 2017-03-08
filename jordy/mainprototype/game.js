@@ -39,6 +39,11 @@ var player;
 var platforms;
 var allowPlayerMove;
 
+//Jordy's code
+var movementSpeed = 200;
+var jumpHeight = -220;
+//Stop
+
 
 // the positions of each block of a tetromino with respect to its center (in cell coordinates)
 var offsets = {
@@ -418,6 +423,7 @@ function checkLines(lines) {
             collapsedLines.push(lines[j]);
             Game.radio.playSound(Game.radio.winSound);
             cleanLine(lines[j]);
+            //Jordy + bij player de jump, movementspeed waardes verandenren naar de global variable 
             assignPowerUp();
         }
     }
@@ -426,12 +432,47 @@ function checkLines(lines) {
     }
 }
 
+
 function assignPowerUp() {
-    console.log("Selecting Power")
-    var myArray = ["double jump", "speed bonus", "extra life", "slowed"];
+    console.log("Selecting Power");
+    //lege waardes voor lagere kans op bonus
+    var myArray = ["Jump Higher", "Faster Speed", "Lower Speed", "", "", ""];
     var random = Math.floor(Math.random() * myArray.length);
     console.log(myArray[random]);
+
+    //reset values
+    movementSpeed = 200;
+    jumpHeight = -220;
+
+    if (myArray[random] == 'Jump Higher') {
+        jumpHeight = -300;
+    } else if (myArray[random] == 'Faster Speed') {
+        movementSpeed = 300;
+    } else if (myArray[random] == 'Lower Speed') {
+        movementSpeed = 50;
+    }
+
+    //text
+    var style = {
+        font: "40px Arial",
+        fill: "#FFFFFF",
+        align: "center"
+    };
+
+    var text = game.add.text(game.world.centerX - 150, game.world.centerY, myArray[random], style);
+
+    text.anchor.set(0.5);
+    text.alpha = 1;
+
+    game.time.events.add(2000, function () {
+        game.add.tween(text).to({}, 1500, Phaser.Easing.Linear.None, true);
+        game.add.tween(text).to({
+            alpha: 0
+        }, 1000, Phaser.Easing.Linear.None, true);
+    }, this);
 }
+
+//STOP
 
 // Remove all blocks from a filled line
 function cleanLine(line) {
@@ -562,16 +603,16 @@ function gameOver() {
 }
 
 Game.update = function () {
-    //Adrian's code
+    //Adrian's code + nieuwe variablen!
     player.body.velocity.x = 0;
     if (cursors.left.isDown) {
         //  Move to the left
-        player.body.velocity.x = -150;
+        player.body.velocity.x = -movementSpeed;
 
         player.animations.play('left');
     } else if (cursors.right.isDown) {
         //  Move to the right
-        player.body.velocity.x = 150;
+        player.body.velocity.x = movementSpeed;
 
         player.animations.play('right');
     } else {
@@ -584,7 +625,7 @@ Game.update = function () {
 
     //console.log(player.body.velocity.y);
     if (cursors.up.isDown && player.body.touching.down) {
-        player.body.velocity.y = -230;
+        player.body.velocity.y = jumpHeight;
     }
 
     //Stop my code
@@ -619,6 +660,7 @@ Game.update = function () {
                 //console.log('Cannot rotate');
             }
         }
+
         currentMovementTimer = 0;
     }
 };
