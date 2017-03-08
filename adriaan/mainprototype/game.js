@@ -190,7 +190,7 @@ Game.create = function(){
     player = game.add.sprite(32, game.world.height - 150, 'dude');
     game.physics.arcade.enable(player);
     player.body.bounce.y = 0.2;
-    player.body.gravity.y = 300;
+    player.body.gravity.y = 500;
     player.body.collideWorldBounds = true;
     //player.animations.add('left', [0, 1, 2, 3], 10, true);
     //player.animations.add('right', [5, 6, 7, 8], 10, true);
@@ -201,14 +201,20 @@ Game.create = function(){
     platforms = game.add.group();
     platforms.enableBody = true;
 
-    door = game.add.sprite(300, 400, 'door');
+    door = game.add.sprite(300, 800, 'door');
     game.physics.arcade.enable(door);
     door.body.immovable = true;
     door.animations.add('open', [0,1,2,3,4,5,6,7,8,9], 10, false);
     //platforms.enableBody = true;
 
-    //end my code
+    //adding invisible button
 
+    //define you regionvar
+    topLeftQuarter = new Phaser.Rectangle(0,0,game.width,game.height/2)
+    //listen for pointers
+    game.input.onDown.add(handlePointerDown)
+
+    //end my code
 
 
     // Places separator between the scene and the right pannel
@@ -274,6 +280,21 @@ Game.create = function(){
     Game.radio.music.volume = 0.2;
     Game.radio.music.loopFull();
 };
+
+//adrian's code
+//handle a touch/click
+handlePointerDown = function(pointer){
+    //this is the test, contains test for a point belonging to a rect definition
+    var inside = topLeftQuarter.contains(pointer.x,pointer.y)
+    //do whatever with the result
+    console.log('pointer is inside region top left quarter', inside)
+
+    if (player.body.touching.down && inside && allowPlayerMove)
+        {
+            player.body.velocity.y = -300;
+        }
+} 
+//end of adrian's code
 
 
 function updateScore(){

@@ -8,6 +8,8 @@ var Menu = {};
 
 Menu.preload = function(){
     // load the fonts here for use in the different game states
+    game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+
     game.load.bitmapFont('gameover', 'assets/fonts/gameover.png', 'assets/fonts/gameover.fnt');
     game.load.bitmapFont('videogame', 'assets/fonts/videogame.png', 'assets/fonts/videogame.fnt'); // converted from ttf using http://kvazars.com/littera/
     game.load.bitmapFont('desyrel', 'assets/fonts/desyrel.png', 'assets/fonts/desyrel.xml');
