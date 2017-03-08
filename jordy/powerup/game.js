@@ -195,8 +195,6 @@ Game.create = function () {
 
     //end my code
 
-
-
     // Places separator between the scene and the right pannel
     var middleSeparator = game.add.graphics(gameWidth, 0);
     middleSeparator.lineStyle(3, 0xffffff, 1);
@@ -436,7 +434,7 @@ function checkLines(lines) {
 function assignPowerUp() {
     console.log("Selecting Power");
     //lege waardes voor lagere kans op bonus
-    var myArray = ["Jump Higher", "Faster Speed", "Lower Speed", "", "", ""];
+    var myArray = ["Jump Higher", "Faster Speed", "Lower Speed"];
     var random = Math.floor(Math.random() * myArray.length);
     console.log(myArray[random]);
 
@@ -608,12 +606,10 @@ Game.update = function () {
     if (cursors.left.isDown) {
         //  Move to the left
         player.body.velocity.x = -movementSpeed;
-
         player.animations.play('left');
     } else if (cursors.right.isDown) {
         //  Move to the right
         player.body.velocity.x = movementSpeed;
-
         player.animations.play('right');
     } else {
         //  Stand still
