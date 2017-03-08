@@ -699,7 +699,27 @@ Game.update = function(){
         if(pause.isDown){
             managePauseScreen();
         }
-        if (cursors.left.isDown)
+
+        /* Swipe controls => Yawuar */
+
+        if(game.input.activePointer.isDown) {
+            var left = game.input.activePointer.x;
+            var pos = left - currentX;
+            if(pos < 0) {
+                if(canMove(slide,"left")){
+                    move(slide,slideCenter,"left",1);
+                }
+            } else if(pos > 0){
+                if(canMove(slide,"right")){
+                    move(slide,slideCenter,"right",1);
+                }
+            }
+            // set the current X value to the left value
+            currentX = left;
+
+        }
+
+        /*if (cursors.left.isDown)
         {
             if(canMove(slide,"left")){
                 move(slide,slideCenter,"left",1);
@@ -710,8 +730,9 @@ Game.update = function(){
             if(canMove(slide,"right")){
                 move(slide,slideCenter,"right",1);
             }
-        }
-        else if (cursors.down.isDown)
+        }*/
+
+        if (cursors.down.isDown)
         {
             if(canMove(slide,"down")){
                 move(slide,slideCenter,"down",1);
