@@ -18,10 +18,8 @@ function placeSeparators(){
     rightSeparator.lineTo(0,game.world.height);
 }
 
-
 function startGame(){
     game.state.start('Game');
-    
 }
 
 function loadLeaderboard(){
