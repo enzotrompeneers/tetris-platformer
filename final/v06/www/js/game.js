@@ -1151,7 +1151,7 @@ function usePowerup() {
         movementSpeed = 150;
         playerJumpHeight = -450;
         if (curPowerUp == 'Jump Higher') {
-            playerJumpHeight = -600;
+            playerJumpHeight = -550;
             tokens = 0;
             curPowerUp = undefined;
             console.log('Using higher jump');
