@@ -476,7 +476,7 @@ function enterDoor(){
         //levelCreator(2);
         currentLevel++;
         currentLevelsPlayed.push(1);
-        localStorage.setItem('levels', currentLevelsPlayed)
+        localStorage.setItem('levels', currentLevelsPlayed);
         //game.state.start('Level');
         chooseLevel();
     }

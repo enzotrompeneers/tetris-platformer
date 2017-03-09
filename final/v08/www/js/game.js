@@ -554,8 +554,14 @@ function enterDoor(){
         //console.log("congrats!");
         //gameOver();
         //levelCreator(2);
-        currentLevel++;
-        game.state.start('Game');
+        //currentLevel++;
+
+        //game.state.start('Game');
+
+        currentLevelsPlayed.push(1);
+        localStorage.setItem('levels', currentLevelsPlayed);
+        //game.state.start('Level');
+        chooseLevel();
     }
 
 }

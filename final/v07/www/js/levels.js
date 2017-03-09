@@ -28,7 +28,7 @@
 	};
 
 	Levels.create = function() {
-		levelsArr = []
+		levelsArr = [];
 		// add bg to game world
 		var bg = game.add.tileSprite(0, 0, 768, 1344, 'bg');
 		// calculate the difference between the width of the game and of background
@@ -63,7 +63,7 @@
 			if(levelsArr) {
 				levelsArr[0].inputEnabled = true;
 				console.log("dit is de eerste element: " + levelsArr[0]);
-		    levelsArr[0].events.onInputDown.add(startGame, this);
+		    	levelsArr[0].events.onInputDown.add(startGame, this);
 			}
 
 				//console.log("levels array = " + levelsArr);

@@ -11,6 +11,22 @@ Menu.preload = function(){
     // load font
     game.load.script('classic-arcade', 'js/webfontloader.js');
 
+    title = {
+        font: '100px arcade', color: '#ffffff',
+        fill: '#ffffff',
+        align: 'center',
+        boundsAlignH: "center",
+        boundsAlignV: "middle"
+    };
+
+    start = {
+        font: '48px arcade', color: '#ffffff',
+        fill: '#ffffff',
+        align: 'center',
+        boundsAlignH: "center",
+        boundsAlignV: "middle"
+    };
+
     //adri's scale to device (credit to enzo bby)
     game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
     
@@ -39,17 +55,7 @@ Menu.preload = function(){
     // load settings btn
     game.load.image('settings', 'assets/settings.png');
     
-    title = {
-        font: '75px arcade', color: '#ffffff',
-        fill: '#ffffff',
-        align: 'center'
-    };
-
-    start = {
-        font: '38px arcade', color: '#ffffff',
-        fill: '#ffffff',
-        align: 'center'
-    };
+    
 
     //end code
 };
@@ -70,26 +76,27 @@ Menu.create = function(){
     // check if game is pressed and start game
     game.input.onDown.add(chooseLevel, this);
 
-    var settings = game.add.sprite(game.world.width - 70, 15, 'settings');
-    settings.scale.setTo(0.7);
+    // title
+    var titleTxt = game.add.text(0, game.world.height / 2 - 250, "tetris\nplatform", title);
+    titleTxt.setTextBounds(game.world.width/2 - 200, 0, 400, 100);
+    // press to start
 
-    door = game.add.sprite(game.world.width /2 - 40, game.world.height /2 + 70, 'door');
+    var pressStartTxt = game.add.text(0, game.world.height - 150, "press  to  start", start);
+    pressStartTxt.setTextBounds(game.world.width/2 - 200, 0, 400, 100);
+
+    door = game.add.sprite(game.world.width /2 - 84, game.world.height /2, 'door');
     game.physics.arcade.enable(door);
-    door.scale.setTo(1.4);
+    door.scale.setTo(2.8);
     door.frame = 0;
 
-    player = game.add.sprite(-50, game.world.height / 2 + 96, 'dude');
+    player = game.add.sprite(-100, game.world.height / 2 + 50, 'dude');
     player.animations.add('right', [5, 6, 7, 8], 10, true);
+    player.scale.setTo(2);
     game.physics.arcade.enable(player);
+    console.log(player.width);
 
     door.animations.add('open', [0,1,2,3,4,5,6,7,8,9], 10, false);
     door.animations.add('close', [9, 8, 7, 6, 5, 4, 3, 2, 1, 0], 20, false);
-
-    // title
-    game.add.text(game.world.width / 2 - 165, game.world.height / 2 - 123, "tetris\nplatform", title);
-    // press to start
-
-    game.add.text(game.world.width / 2 - 135.5, game.world.height - 100, "press  to  start", start);
     
     //end code
 };
