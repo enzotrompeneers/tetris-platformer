@@ -40,7 +40,7 @@ var player;
 var platforms;
 var allowPlayerMove = false;
 var allowTimeToMove = 300;
-var playerJumpHeight = -450;
+//JORDY, playerjumpheight is verhuist naar mijn code
 var timeMoving = 0;
 var fallenTetrominoes = 0;
 var door;
@@ -50,10 +50,18 @@ var doorOpened = false;
 // Swipe controls => Yawuar
 var currentX = 0;
 
-
 //***JORDY****
 var life = 3;
 var decreaseLife = 0;
+var hart1;
+var hart2;
+var hart3;
+
+var movementSpeed = 150;
+var playerJumpHeight = -450;
+var curPowerUp;
+var tokens = 0;
+var reuse = false;
 //STOP
 
 // the positions of each block of a tetromino with respect to its center (in cell coordinates)
@@ -176,6 +184,13 @@ Game.preload = function () {
 
     //***JORDY***
     game.load.spritesheet('blockgrey', 'assets/blocksgrey.png');
+    game.load.image('hartje', 'assets/hartje.png');
+
+    //tijdelijk
+    game.input.keyboard.enabled = true;
+    keyO = game.input.keyboard.addKey(Phaser.Keyboard.O);
+    //moet button worden voor powerup te gebruiken
+    keyP = game.input.keyboard.addKey(Phaser.Keyboard.P);
     //STOP
 
 };
@@ -213,6 +228,18 @@ Game.create = function () {
     door.animations.add('open', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 10, false);
 
     createPLayer();
+
+    hart1 = game.add.sprite(10, 10, 'hartje');
+    hart2 = game.add.sprite(60, 10, 'hartje');
+    hart3 = game.add.sprite(110, 10, 'hartje');
+
+    hearts = game.add.group()
+    hearts.add(hart1);
+    hearts.add(hart2);
+    hearts.add(hart3);
+    hearts.scale.setTo(1.5, 1.5);
+
+    game.time.events.loop(Phaser.Timer.SECOND * 0.5, decreaseLifePoints, this);
     //STOP
 
     // swipe controls => Yawuar
@@ -321,9 +348,7 @@ Game.create = function () {
     Game.radio.music.loopFull();
 
     loop.delay -= speedUp * 5;
-    
-    //JORDY
-    game.time.events.loop(Phaser.Timer.SECOND*0.5, decreaseLifePoints, this);
+
 };
 
 //adrian's code
@@ -546,6 +571,9 @@ function checkLines(lines) {
             collapsedLines.push(lines[j]);
             Game.radio.playSound(Game.radio.winSound);
             cleanLine(lines[j]);
+            //Jordy
+            assignPowerUp();
+            //Stop
         }
     }
     if (collapsedLines.length) {
@@ -555,19 +583,21 @@ function checkLines(lines) {
 
 // Remove all blocks from a filled line
 function cleanLine(line) {
-    console.log("kek");
     var delay = 0;
     for (var k = 0; k < numBlocksX; k++) {
         // Make a small animation to send the removed blocks flying to the top
         var tween = game.add.tween(sceneSprites[k][line]);
+
+        //JORDY
         tween.to({
-            y: 0
+            x: 0
         }, 500, null, false, delay);
+        //STOP
         tween.onComplete.add(destroy, this);
         tween.start();
         sceneSprites[k][line] = null;
         scene[k][line] = 0;
-        delay += 50; // For each block, start the tween 50ms later so they move wave-like
+        delay += 64; // For each block, start the tween 50ms later so they move wave-like
     }
 }
 
@@ -685,7 +715,9 @@ function gameOver() {
     gameOverState = true;
     game.input.keyboard.enabled = false;
     Game.radio.music.pause();
-    Game.radio.playSound(Game.radio.gameOverSound);
+    //JORDY
+    //Game.radio.playSound(Game.radio.gameOverSound);
+    //STOP
     makeShade();
     var gameover = game.add.bitmapText(game.world.centerX, game.world.centerY, 'gameover', 'GAME OVER', 64);
     gameover.anchor.setTo(0.5);
@@ -750,12 +782,12 @@ Game.update = function () {
             var left = game.input.activePointer.x;
             var pos = left - currentX;
             if (pos < 0) {
-                player.body.velocity.x = -150;
+                player.body.velocity.x = -movementSpeed;
                 player.animations.play('left');
             }
 
             if (pos > 0) {
-                player.body.velocity.x = 150;
+                player.body.velocity.x = movementSpeed;
                 player.animations.play('right');
             } else {
 
@@ -777,11 +809,13 @@ Game.update = function () {
     //Stop my code
 
     //***JORDY****
+    keyP.onDown.add(usePowerup, this);
+    keyO.onDown.add(assignPowerUp, this);
     game.physics.arcade.overlap(player, platforms, lifeCounter, null, this);
     //STOP
 
 
-        currentMovementTimer += this.time.elapsed;
+    currentMovementTimer += this.time.elapsed;
     if (currentMovementTimer > movementLag) { // Prevent too rapid firing
         if (pause.isDown) {
             managePauseScreen();
@@ -847,7 +881,7 @@ function lifeCounter() {
     decreaseLife += 1;
     console.log("lifebuffer = " + decreaseLife);
 
-    if (life > 0) {
+    if (life > 1) {
         player.kill();
         createPLayer();
     } else {
@@ -857,11 +891,26 @@ function lifeCounter() {
 }
 
 function decreaseLifePoints() {
+
     if (decreaseLife != 0) {
         life -= 1;
         console.log("LIFE = " + life);
-        
         decreaseLife = 0;
+
+        Game.radio.playSound(Game.radio.gameOverSound);
+    }
+
+    if (life == 2) {
+        hart3.kill();
+    } else if (life == 1) {
+        hart2.kill();
+        hart1.alpha = 0;
+        tween = game.add.tween(hart1).to({
+            alpha: 1
+        }, 300, "Linear", true, 0, -1);
+        tween.yoyo(true, 300);
+    } else if (life <= 0) {
+        hart1.kill();
     }
 }
 
@@ -890,10 +939,10 @@ function createPLayer() {
     if (door.x >= game.world.centerX) {
         positionX = 100;
     } else {
-        positionX = game.world.width - 100;
+        positionX = door.y;
     }
 
-    player = game.add.sprite(positionX, positionY - 300, 'dude');
+    player = game.add.sprite(positionX, positionY, 'dude');
     player.scale.setTo(2, 2);
     game.physics.arcade.enable(player);
     player.body.bounce.y = 0.2;
@@ -905,6 +954,92 @@ function createPLayer() {
     player.animations.add('right', [5, 6, 7, 8], 10, true);
     player.frame = 4;
 }
+
+function assignPowerUp() {
+    //Select random power up
+    var myArray = ["Jump Higher", "Faster Speed", "Extra Life", "", "", "", ""];
+    var random = Math.floor(Math.random() * myArray.length);
+
+    if (myArray[random] == "" && curPowerUp != undefined) {
+        reuse = true;
+        curPowerUp = curPowerUp;
+    } else if (myArray[random] == curPowerUp) {
+        reuse = true;
+        curPowerUp = curPowerUp;
+    } else {
+        reuse = false;
+        curPowerUp = myArray[random];
+    }
+
+    if (curPowerUp == 'Extra Life' && reuse == false) {
+
+        var text = game.add.bitmapText(game.world.centerX, game.world.centerY, 'videogame', curPowerUp, 42);
+        text.anchor.set(0.5);
+        game.time.events.add(2000, function () {
+            game.add.tween(text).to({}, 1500, Phaser.Easing.Linear.None, true);
+            game.add.tween(text).to({
+                alpha: 0
+            }, 1000, Phaser.Easing.Linear.None, true);
+        }, this);
+        tokens = 1;
+
+    } else if (curPowerUp != 'Extra Life' && reuse == false) {
+
+        var text = game.add.bitmapText(game.world.centerX, game.world.centerY, 'videogame', curPowerUp, 42);
+        text.anchor.set(0.5);
+        game.time.events.add(2000, function () {
+            game.add.tween(text).to({}, 1500, Phaser.Easing.Linear.None, true);
+            game.add.tween(text).to({
+                alpha: 0
+            }, 1000, Phaser.Easing.Linear.None, true);
+        }, this);
+        tokens = 1;
+    }
+
+    console.log('Selected powerup = ' + curPowerUp);
+    console.log('Tokens = ' + tokens);
+}
+
+function usePowerup() {
+
+    //Reset Values
+    movementSpeed = 150;
+    playerJumpHeight = -450;
+
+    if (tokens == 1) {
+        if (curPowerUp == 'Jump Higher') {
+            playerJumpHeight = -540;
+            tokens = 0;
+            curPowerUp = undefined;
+            console.log('Using higher jump');
+        } else if (curPowerUp == 'Faster Speed') {
+            movementSpeed = 300;
+            tokens = 0;
+            curPowerUp = undefined;
+            console.log('Improve movement speed');
+        } else if (curPowerUp == 'Extra Life') {
+            addLife();
+            tokens = 0;
+            curPowerUp = undefined;
+            console.log('Adding a life');
+        }
+    }
+}
+
+function addLife() {
+
+    if (life < 3) {
+        //Add a life
+        life += 1
+            //Respawn sprite
+        if (life == 3) {
+            hart3.revive();
+        } else if (life == 2) {
+            hart2.revive();
+        }
+    }
+}
+
 
 //STOP
 
