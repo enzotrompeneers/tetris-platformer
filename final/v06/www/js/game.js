@@ -163,6 +163,8 @@ Game.preload = function() {
     game.load.image('background', 'assets/final_background_zonder_controlers.png');
     game.load.spritesheet('dude', 'assets/charv03.png', 50, 64);
     game.load.spritesheet('door','assets/door_spritesheet.png', 60,64);
+
+    game.load.image('blackOverlay', 'assets/blackoverlay.png');
     //end of code
 };
 
