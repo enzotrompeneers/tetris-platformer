@@ -101,7 +101,7 @@ function Tetromino(){
             var x = c_x + offsets[this.shape][i][0];
             var y = c_y + offsets[this.shape][i][1];
             var sprite = game.add.sprite(x * blockSize, y * blockSize, 'blocks', this.color);
-            
+
             //adrian's code
             platforms.add(sprite);
             sprite.body.immovable = true;
@@ -171,7 +171,7 @@ Game.preload = function() {
 Game.create = function(){
     //adri adding background & control panel
     background = game.add.sprite(0,0,'background');
-    background.scale.setTo(0.71,0.7); 
+    background.scale.setTo(0.71,0.7);
 
     joystick = game.add.sprite(75, game.world.height - 275, 'joystick');
     joystick.scale.setTo(1.4,1.4);
@@ -215,7 +215,7 @@ Game.create = function(){
     //Adrian's code
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
-    
+
     //adding player
     player = game.add.sprite(-50, 0, 'dude');
     player.scale.setTo(2,2);
@@ -239,7 +239,7 @@ Game.create = function(){
     door.body.immovable = true;
     door.animations.add('open', [0,1,2,3,4,5,6,7,8,9], 10, false);
 
-    //door.body.position.x 
+    //door.body.position.x
 
     levelCreator(currentLevel);
 
@@ -403,7 +403,7 @@ handlePointerDown = function(pointer){
             }
         }
     }
-    
+
     if (insideRight) {
         //moving player right
         joystick.animations.play('moveRight');
@@ -441,7 +441,7 @@ handlePointerDown = function(pointer){
     }else if(insideB && allowPlayerMove){
             //use powerup
     }
-} 
+}
 //end of adrian's code
 
 
@@ -475,7 +475,7 @@ function enterDoor(){
         //gameOver();
         //levelCreator(2);
         currentLevel++;
-        game.state.start('Game');
+        game.state.start('Level');
     }
 
 }
@@ -733,8 +733,8 @@ function fall(){
         } else {
             manageTetrominos();
         }
-        
-        
+
+
 
         //end of code
 
@@ -794,7 +794,7 @@ Game.update = function(){
         player.animations.stop();
         player.frame = 4;
     }
-    
+
     if (timeMoving >= allowTimeToMove) {
         allowPlayerMove = false;
         timeMoving = 0;
@@ -803,7 +803,7 @@ Game.update = function(){
         player.frame = 4;
     }
 
-    
+
     game.physics.arcade.collide(player, platforms);
 
     game.physics.arcade.collide(player, door, enterDoor);
