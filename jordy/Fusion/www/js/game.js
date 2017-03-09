@@ -389,13 +389,15 @@ function resetLevel() {
     completedLines = 0;
     door.frame = 0;
     fallenTetrominoes = 0;
-
+    
+    //JORDY
     curPowerUp = undefined;
     movementSpeed = 150;
     playerJumpHeight = -450;
     tokens = 0;
     reuse = false;
     life = 3;
+    //...
 
     showOverlay();
     createPlayer();
@@ -1151,7 +1153,7 @@ function usePowerup() {
         movementSpeed = 150;
         playerJumpHeight = -450;
         if (curPowerUp == 'Jump Higher') {
-            playerJumpHeight = -550;
+            playerJumpHeight = -600;
             tokens = 0;
             curPowerUp = undefined;
             console.log('Using higher jump');

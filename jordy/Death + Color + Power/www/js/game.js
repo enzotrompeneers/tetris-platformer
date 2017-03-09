@@ -227,7 +227,7 @@ Game.create = function () {
     door.body.immovable = true;
     door.animations.add('open', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 10, false);
 
-    createPLayer();
+    createPlayer();
 
     hart1 = game.add.sprite(10, 10, 'hartje');
     hart2 = game.add.sprite(60, 10, 'hartje');
@@ -736,7 +736,7 @@ Game.update = function () {
         player.animations.stop();
         player.frame = 4;
         //***JORDY***
-        changeColor()
+        changeColor();
             //STOP
     }
 
@@ -753,9 +753,8 @@ Game.update = function () {
         timeMoving++;
 
         //***JORDY***
-        changeColor()
+        changeColor();
             //STOP
-
         /*if (cursors.left.isDown)
         {
             //  Move to the left
@@ -883,7 +882,7 @@ function lifeCounter() {
 
     if (life > 1) {
         player.kill();
-        createPLayer();
+        createPlayer();
     } else {
         player.kill();
         gameOver();
@@ -931,7 +930,7 @@ function changeColor() {
     }
 }
 
-function createPLayer() {
+function createPlayer() {
 
     var positionX;
     var positionY;
@@ -939,17 +938,16 @@ function createPLayer() {
     if (door.x >= game.world.centerX) {
         positionX = 100;
     } else {
-        positionX = door.y;
+        positionX = game.world.width - 100;
     }
 
-    player = game.add.sprite(positionX, positionY, 'dude');
+    player = game.add.sprite(positionX, 100, 'dude');
     player.scale.setTo(2, 2);
     game.physics.arcade.enable(player);
     player.body.bounce.y = 0.2;
     player.body.gravity.y = 600;
     player.body.collideWorldBounds = true;
-    //player.animations.add('left', [0, 1, 2, 3], 10, true);
-    //player.animations.add('right', [5, 6, 7, 8], 10, true);
+
     player.animations.add('left', [0, 1, 2, 3], 10, true);
     player.animations.add('right', [5, 6, 7, 8], 10, true);
     player.frame = 4;
@@ -1002,11 +1000,12 @@ function assignPowerUp() {
 
 function usePowerup() {
 
-    //Reset Values
-    movementSpeed = 150;
-    playerJumpHeight = -450;
+    
 
     if (tokens == 1) {
+        //Reset Values
+        movementSpeed = 150;
+        playerJumpHeight = -450;
         if (curPowerUp == 'Jump Higher') {
             playerJumpHeight = -540;
             tokens = 0;
