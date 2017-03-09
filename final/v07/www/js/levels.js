@@ -6,14 +6,14 @@
 
 	Levels.preload = function() {
 		title = {
-	        font: '75px arcade', color: '#ffffff',
+	        font: '100px arcade',
 	        fill: '#ffffff',
 	        align: 'center',
 	        boundsAlignH: "center",
 	        boundsAlignV: "middle"
     	};
     	level = {
-	        font: '36px arcade', color: '#ffffff',
+	        font: '48px arcade',
 	        fill: '#0d151f',
 	        align: 'center'
     	};
@@ -40,13 +40,13 @@
 	    // set the alpha of background
 	    bg.alpha = 0.2;
 
-    	var text = game.add.text(0, 100, "levels", title);
+    	var text = game.add.text(0, 150, "levels", title);
     	text.setTextBounds(game.world.width/2 - 200, 0, 400, 100);
     	var levelNmb = 0;
     	for(var i = 1; i <= 3; i++) {
     		for(var j = 1; j <= 3; j++) {
     			levelNmb++;
-    			var star = game.add.sprite(-120 + (j*175), 125 + (i*175), 'starDisabled');
+    			var star = game.add.sprite(-120 + (j*215), 195 + (i*225), 'starDisabled');
     			star.scale.setTo(0.8);
 
     			var text = game.add.text(0, 0, levelNmb, level);
@@ -58,23 +58,10 @@
     			levelsArr.push(star);
     		}
     	}
-
-    	    			//star[0].input.onDown.add(startGame, this);
-    	//levelsArr[0].input.onDown(startGame, this);
-
-
     //  Enables all kind of input actions on this image (click, etc)
     levelsArr[0].inputEnabled = true;
 
     levelsArr[0].events.onInputDown.add(startGame, this);
-
-    	  //   	    		    var firstStar = 1;
-		    	// var goldStar = game.add.sprite(-120 + (firstStar*175), 125 + (firstStar*175), 'star');
-		    	// levelsArr[firstStar] = goldStar
-		    	// console.log("Dit is een arr = "levelsArr[firstStar]);
-		    	// goldStar.scale.setTo(0.6);
-    	//console.log(levelsArr);
-
 	};
 
 	Levels.update = function() {

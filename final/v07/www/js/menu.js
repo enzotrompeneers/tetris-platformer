@@ -10,22 +10,26 @@ var isOpen = false;
 Menu.preload = function(){
     // load font
     game.load.script('classic-arcade', 'js/webfontloader.js');
-    
+
     title = {
-        font: '75px arcade', color: '#ffffff',
+        font: '100px arcade',
         fill: '#ffffff',
-        align: 'center'
+        align: 'center',
+        boundsAlignH: "center",
+        boundsAlignV: "middle"
     };
 
     start = {
-        font: '38px arcade', color: '#ffffff',
+        font: '48px arcade',
         fill: '#ffffff',
-        align: 'center'
+        align: 'center',
+        boundsAlignH: "center",
+        boundsAlignV: "middle"
     };
 
     //adri's scale to device (credit to enzo bby)
     game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-    
+
     // load the fonts here for use in the different game states
     game.load.bitmapFont('gameover', 'assets/fonts/gameover.png', 'assets/fonts/gameover.fnt');
     game.load.bitmapFont('videogame', 'assets/fonts/videogame.png', 'assets/fonts/videogame.fnt'); // converted from ttf using http://kvazars.com/littera/
@@ -38,7 +42,7 @@ Menu.preload = function(){
 
     game.load.spritesheet('knopA','assets/knop_a_in_kleur_loop.png', 100,100)
     game.load.spritesheet('knopB','assets/knop_b_in_kleur_loop.png', 100,100)
-    
+
     // load background image by Yawuar
     game.load.image('bg', 'assets/background.jpg');
 
@@ -47,11 +51,6 @@ Menu.preload = function(){
 
     // load door
     game.load.spritesheet('door','assets/door_spritesheet.png', 60,64)
-
-    // load settings btn
-    game.load.image('settings', 'assets/settings.png');
-    
-    
 
     //end code
 };
@@ -72,26 +71,27 @@ Menu.create = function(){
     // check if game is pressed and start game
     game.input.onDown.add(chooseLevel, this);
     // title
-    game.add.text(game.world.width / 2 - 165, game.world.height / 2 - 123, "tetris\nplatform", title);
+    var titleTxt = game.add.text(0, game.world.height / 2 - 250, "tetris\nplatform", title);
+    titleTxt.setTextBounds(game.world.width/2 - 200, 0, 400, 100);
     // press to start
 
-    game.add.text(game.world.width / 2 - 135.5, game.world.height - 100, "press  to  start", start);
+    var pressStartTxt = game.add.text(0, game.world.height - 150, "press  to  start", start);
+    pressStartTxt.setTextBounds(game.world.width/2 - 200, 0, 400, 100);
 
-    var settings = game.add.sprite(game.world.width - 70, 15, 'settings');
-    settings.scale.setTo(0.7);
-
-    door = game.add.sprite(game.world.width /2 - 40, game.world.height /2 + 70, 'door');
+    door = game.add.sprite(game.world.width /2 - 84, game.world.height /2, 'door');
     game.physics.arcade.enable(door);
-    door.scale.setTo(1.4);
+    door.scale.setTo(2.8);
     door.frame = 0;
 
-    player = game.add.sprite(-50, game.world.height / 2 + 96, 'dude');
+    player = game.add.sprite(-100, game.world.height / 2 + 50, 'dude');
     player.animations.add('right', [5, 6, 7, 8], 10, true);
+    player.scale.setTo(2);
     game.physics.arcade.enable(player);
+    console.log(player.width);
 
     door.animations.add('open', [0,1,2,3,4,5,6,7,8,9], 10, false);
     door.animations.add('close', [9, 8, 7, 6, 5, 4, 3, 2, 1, 0], 20, false);
-    
+
     //end code
 };
 
@@ -109,8 +109,8 @@ Menu.update = function() {
 }
 
 function runPlayer() {
-    
-    if(Math.ceil(player.body.position.x) >= game.world.width / 2 - 25) {
+
+    if(Math.ceil(player.body.position.x) >= game.world.width / 2 - 50) {
         player.body.velocity.x = 0;
         player.animations.stop();
         player.frame = 4;
