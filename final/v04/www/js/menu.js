@@ -6,8 +6,26 @@
 
 var Menu = {};
 var textWidth = 0;
+var min = 1;
+
+var title;
+var start;
+var isOpen = false;
 
 Menu.preload = function(){
+
+    title = {
+        font: '75px arcade', color: '#ffffff',
+        fill: '#ffffff',
+        align: 'center'
+    };
+
+    start = {
+        font: '38px arcade', color: '#ffffff',
+        fill: '#ffffff',
+        align: 'center'
+    };
+
     //adri's scale to device (credit to enzo bby)
     game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
     
@@ -20,12 +38,17 @@ Menu.preload = function(){
     // load background image by Yawuar
     game.load.image('bg', 'assets/background.jpg');
 
+    // load player
+    game.load.spritesheet('dude', 'assets/charv03.png', 50, 64);
+
+    // load door
+    game.load.spritesheet('door','assets/door_spritesheet.png', 60,64)
+
     // load settings btn
     game.load.image('settings', 'assets/settings.png');
     
     // load font
     game.load.script('classic-arcade', '//cdnjs.cloudflare.com/ajax/libs/webfont/1.6.27/webfontloader.js');
-    
 
     //end code
 };
@@ -47,24 +70,26 @@ Menu.create = function(){
 
     // check if game is pressed and start game
     game.input.onDown.add(startGame, this);
-    var title = {
-        font: '75px arcade', color: '#ffffff',
-        fill: '#ffffff',
-        align: 'center'
-    };
-    var start = {
-        font: '38px arcade', color: '#ffffff',
-        fill: '#ffffff',
-        align: 'center'
-    };
     // title
-    game.add.text(game.world.width / 2 - 165, game.world.height / 2 - 73, "tetris\nplatform", title);
+    game.add.text(game.world.width / 2 - 165, game.world.height / 2 - 123, "tetris\nplatform", title);
     // press to start
 
     game.add.text(game.world.width / 2 - 135.5, game.world.height - 100, "press  to  start", start);
 
     var settings = game.add.sprite(game.world.width - 70, 15, 'settings');
     settings.scale.setTo(0.7);
+
+    door = game.add.sprite(game.world.width /2 - 40, game.world.height /2 + 70, 'door');
+    game.physics.arcade.enable(door);
+    door.scale.setTo(1.4);
+    door.frame = 0;
+
+    player = game.add.sprite(-50, game.world.height / 2 + 96, 'dude');
+    player.animations.add('right', [5, 6, 7, 8], 10, true);
+    game.physics.arcade.enable(player);
+
+    door.animations.add('open', [0,1,2,3,4,5,6,7,8,9], 10, false);
+    door.animations.add('close', [9, 8, 7, 6, 5, 4, 3, 2, 1, 0], 20, false);
 
     //end code
 };
@@ -73,6 +98,39 @@ Menu.shutdown = function(){
     document.getElementById('keys').style.display = "none";
     document.getElementById('cup').style.display = "none";
 };
+
+Menu.update = function() {
+
+    player.body.velocity.x = 100;
+    player.animations.play('right');
+    runPlayer();
+    //player.body.position.x = -50;
+
+}
+
+function runPlayer() {
+    
+    if(Math.ceil(player.body.position.x) >= game.world.width / 2 - 25) {
+        player.body.velocity.x = 0;
+        player.animations.stop();
+        player.frame = 4;
+        min -= 0.02;
+        if(min > 0) {
+            player.alpha = min;
+        } else {
+            min = 1;
+            player.body.position.x = -50;
+            player.alpha = min;
+            isOpen = false;
+            door.animations.play('close');
+        }
+    }
+
+    if(Math.ceil(player.body.position.x) >= game.world.width / 6 && !isOpen) {
+        isOpen = true;
+        door.animations.play('open');
+    }
+}
 
 // maps keyboard charcodes to more readable literals
 Menu.keyMaps = {

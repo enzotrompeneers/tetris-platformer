@@ -164,7 +164,7 @@ Game.preload = function() {
 
     //adrian's code
     //game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
-    game.load.image('background', 'assets/game_2.png');
+    game.load.image('background', 'assets/final_background.png');
     game.load.spritesheet('dude', 'assets/charv03.png', 50, 64);
     game.load.spritesheet('door','assets/door_spritesheet.png', 60,64);
     //end of code
@@ -236,7 +236,7 @@ Game.create = function(){
     platforms = game.add.group();
     platforms.enableBody = true;
 
-    door = game.add.sprite(300, 700, 'door');
+    door = game.add.sprite(300, 500, 'door');
     door.scale.setTo(2,2);
     game.physics.arcade.enable(door);
     door.body.immovable = true;
@@ -317,13 +317,10 @@ Game.create = function(){
     Game.radio.winSound = game.add.audio('win');
     Game.radio.gameOverSound = game.add.audio('gameover');
     Game.radio.music = game.add.audio('music');
-    Game.radio.music.volume = 0.2;
+    Game.radio.music.volume = 0.0; //adri turned 0.2 -> 0.0
     Game.radio.music.loopFull();
 
     loop.delay -= speedUp*5;
-
-    //adri
-    game.scale.startFullScreen(false);
 };
 
 
