@@ -164,7 +164,7 @@ Game.preload = function() {
 
     //adrian's code
     //game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
-    game.load.image('background', 'assets/game_2.png');
+    game.load.image('background', 'assets/final_background.png');
     game.load.spritesheet('dude', 'assets/charv03.png', 50, 64);
     game.load.spritesheet('door','assets/door_spritesheet.png', 60,64);
     //end of code
