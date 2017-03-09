@@ -4,7 +4,6 @@
 var game = new Phaser.Game(gameWidth+menuWidth, numBlocksY*blockSize+blockSize+256, Phaser.AUTO, document.getElementById('game'));
 game.state.add('Menu',Menu);
 game.state.add('Game',Game);
-game.state.add('Leaderboard',Leaderboard);
 
 game.state.start('Menu');
 

@@ -1,9 +1,3 @@
-<!--
-/*
-* Author: Jerome Renaux
-* E-mail: jerome.renaux@gmail.com
- */
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -11,7 +5,6 @@
     <script type="text/javascript" src="js/phaser.min.js"></script>
     <script type="text/javascript" src="js/menu.js"></script>
     <script type="text/javascript" src="js/game.js"></script>
-    <script type="text/javascript" src="js/leaderboard.js"></script>
     <title>Tetris</title>
     <style>
         *{
@@ -26,6 +19,7 @@
             margin-left: auto;
             margin-right: auto;
             width: 908px;
+            overflow: hidden;
           }
         #keys{
             color: white;
@@ -40,14 +34,6 @@
         #keys div{
             margin-right: 15px;
             min-width: 100px;
-        }
-        #cup {
-            position: absolute;
-            display: none;
-            width: 128px;
-            height: 128px;
-            top: 500px;
-            left: 390px;
         }
         #name {
             color: white;
@@ -92,14 +78,6 @@
                 <input readonly type="text" id="moveright" title="Key to move tetromino to the right" value="RIGHT" onkeydown="Menu.updateKey(event,this.id)"/><br/>
                 <input readonly type="text" id="movedown" title="Key to move tetromino down" value="DOWN" onkeydown="Menu.updateKey(event,this.id)"/><br/>
             </div>
-        </div>
-        <div id="cup">
-            <img src="assets/cup.png" onclick="loadLeaderboard()"/>
-        </div>
-        <div id="name">
-            Enter your name: <br/>
-            <input type="text" id="playername"/><br/>
-            <input type="submit" title="Player name" value="OK" onclick="sendScore(); loadLeaderboard();"/>
         </div>
     </div>
 </body>

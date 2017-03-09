@@ -1,8 +1,3 @@
-/*
- * Author: Jerome Renaux
- * E-mail: jerome.renaux@gmail.com
- */
-
 
 var Menu = {};
 
@@ -54,7 +49,6 @@ Menu.create = function(){
 
 Menu.shutdown = function(){
     document.getElementById('keys').style.display = "none";
-    document.getElementById('cup').style.display = "none";
 };
 
 // maps keyboard charcodes to more readable literals
