@@ -44,7 +44,7 @@ var currentLevel = 1;
 
 //enzo
 var requireStyle;
-var requireText = "finish   2   lines";
+var requireText = "get  to  the  door";
 
 // Swipe controls => Yawuar
 var currentX = 0;
@@ -430,10 +430,11 @@ function createPlayer() {
     player.position.y = 100;
 }
 
-function levelCreator(level) {
-    currentLevel = level;
-    switch (level) {
+function levelCreator(currentLevel) {
+    //currentLevel = level;
+    switch (currentLevel) {
         case 1:
+            requireText = "get  to  the  door";
             resetLevel();
             door.position.x = 150;
             door.position.y = 600;
@@ -444,6 +445,7 @@ function levelCreator(level) {
             break;
 
         case 2:
+            requireText = "clear   2   lines";
             resetLevel();
             door.position.x = 300;
             door.position.y = 650;
@@ -453,12 +455,74 @@ function levelCreator(level) {
             break;
 
         case 3:
+            requireText = "clear   4   lines";
             resetLevel();
             door.position.x = 300;
             door.position.y = 300;
 
             linesNeededToOpenDoor = 4;
             doorOpened = false;
+            break;
+
+        case 4:
+            requireText = "clear   2   lines";
+            resetLevel();
+            door.position.x = 300;
+            door.position.y = 650;
+
+            linesNeededToOpenDoor = 2;
+            doorOpened = false;
+            break;
+
+        case 5:
+            requireText = "clear   2   lines";
+            resetLevel();
+            door.position.x = 300;
+            door.position.y = 650;
+
+            linesNeededToOpenDoor = 2;
+            doorOpened = false;
+            break;
+
+        case 6:
+            requireText = "clear   2   lines";
+            resetLevel();
+            door.position.x = 300;
+            door.position.y = 650;
+
+            linesNeededToOpenDoor = 2;
+            doorOpened = false;
+            break;
+
+        case 7:
+            requireText = "clear   2   lines";
+            resetLevel();
+            door.position.x = 300;
+            door.position.y = 650;
+
+            linesNeededToOpenDoor = 2;
+            doorOpened = false;
+            break;
+
+        case 8:
+            requireText = "clear   2   lines";
+            resetLevel();
+            door.position.x = 300;
+            door.position.y = 650;
+
+            linesNeededToOpenDoor = 2;
+            doorOpened = false;
+            break;
+
+        case 9:
+            requireText = "clear   2   lines";
+            resetLevel();
+            door.position.x = 300;
+            door.position.y = 650;
+
+            linesNeededToOpenDoor = 2;
+            doorOpened = false;
+            break;
     }
 }
 
@@ -554,7 +618,6 @@ function enterDoor(){
         //console.log("congrats!");
         //gameOver();
         //levelCreator(2);
-        //currentLevel++;
 
         //game.state.start('Game');
 
