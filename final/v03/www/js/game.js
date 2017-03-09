@@ -1,8 +1,3 @@
-/*
-* Author: Jerome Renaux
-* E-mail: jerome.renaux@gmail.com
- */
-
 var Game = {};
 
 var blocksPerTetromino = 4;
@@ -46,6 +41,7 @@ var fallenTetrominoes = 0;
 var door;
 var linesNeededToOpenDoor = 2;
 var doorOpened = false;
+var currentLevel = 1;
 
 // Swipe controls => Yawuar
 var currentX = 0;
@@ -164,7 +160,7 @@ Game.preload = function() {
 
     //adrian's code
     //game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
-    game.load.image('background', 'assets/final_background.png');
+    game.load.image('background', 'assets/final_background_zonder_controlers.png');
     game.load.spritesheet('dude', 'assets/charv03.png', 50, 64);
     game.load.spritesheet('door','assets/door_spritesheet.png', 60,64);
     //end of code
@@ -178,8 +174,8 @@ Game.create = function(){
     joystick = game.add.sprite(75, game.world.height - 275, 'joystick');
     joystick.scale.setTo(1.4,1.4);
 
-    joystick.animations.add('moveLeft', [0,1,2],10,false);
-    joystick.animations.add('moveRight', [0,3,4],10,false);
+    joystick.animations.add('moveLeft', [0,1,2],15,false);
+    joystick.animations.add('moveRight', [0,3,4],15,false);
 
     joystick.animations.add('wiggle', [0,1,2,1,0,3,4,3], 2, true);
     //joystick.animations.play('wiggle');
@@ -189,11 +185,6 @@ Game.create = function(){
     buttonA.scale.setTo(1.3,1.3);
     buttonB = game.add.sprite(602, game.world.height - 255, 'knopB');
     buttonB.scale.setTo(1.3,1.3);
-
-    buttonA.animations.add('wiggle', [0,1], 2, true);
-    //knopA.animations.play('wiggle');
-    buttonB.animations.add('wiggle', [0,1], 2, true);
-    //knopB.animations.play('wiggle');
 
     // swipe controls => Yawuar
     currentX = game.input.activePointer.x;
@@ -221,7 +212,10 @@ Game.create = function(){
 
     //Adrian's code
     game.physics.startSystem(Phaser.Physics.ARCADE);
-    player = game.add.sprite(32, game.world.height - 800, 'dude');
+
+    
+    //adding player
+    player = game.add.sprite(-50, 0, 'dude');
     player.scale.setTo(2,2);
     game.physics.arcade.enable(player);
     player.body.bounce.y = 0.2;
@@ -236,11 +230,18 @@ Game.create = function(){
     platforms = game.add.group();
     platforms.enableBody = true;
 
-    door = game.add.sprite(300, 500, 'door');
+    //adding door
+    door = game.add.sprite(300, 700, 'door');
     door.scale.setTo(2,2);
     game.physics.arcade.enable(door);
     door.body.immovable = true;
     door.animations.add('open', [0,1,2,3,4,5,6,7,8,9], 10, false);
+
+    //door.body.position.x 
+
+    levelCreator(currentLevel);
+
+
     //platforms.enableBody = true;
 
     //adding invisible buttons
@@ -325,6 +326,60 @@ Game.create = function(){
 
 
 //adrian's code
+function resetLevel() {
+    for (i = 0; i < numBlocksY; i++) {
+        cleanLine(i);
+    }
+    allowPlayerMove = false;
+    player.animations.stop();
+    player.frame = 4;
+
+    completedLines = 0;
+    door.frame = 0;
+    fallenTetrominoes = 0;
+}
+
+function levelCreator(level) {
+    currentLevel = level;
+    switch (level) {
+        case 1:
+            player.position.x = 32;
+            player.position.y = game.world.height - 800;
+
+            door.position.x = 150;
+            door.position.y = 600;
+            console.log("lol" + door.body.position.x + door.body.position.y);
+
+            linesNeededToOpenDoor = 0;
+            doorOpened = true;
+            openDoor();
+            break;
+
+        case 2:
+            resetLevel();
+            player.position.x = 32;
+            player.position.y = game.world.height - 800;
+
+            door.position.x = 300;
+            door.position.y = 650;
+
+            linesNeededToOpenDoor = 2;
+            doorOpened = false;
+            break;
+
+        case 3:
+            resetLevel();
+            player.position.x = 32;
+            player.position.y = game.world.height - 800;
+
+            door.position.x = 300;
+            door.position.y = 300;
+
+            linesNeededToOpenDoor = 4;
+            doorOpened = false;
+    }
+}
+
 //handle a touch/click
 handlePointerDown = function(pointer){
     var insideA = invisibleButtonA.contains(pointer.x,pointer.y)
@@ -360,6 +415,13 @@ handlePointerDown = function(pointer){
             move(slide,slideCenter,"right",1);
             }
         }
+    }
+
+    if (insideA) {
+        buttonA.frame = 1;
+    }
+    if (insideB) {
+        buttonB.frame = 1;
     }
 
     if (insideA && !allowPlayerMove) {
@@ -406,10 +468,12 @@ function openDoor(){
 }
 
 function enterDoor(){
-    console.log("touchingdoor");
     if (doorOpened) {
-        console.log("congrats!");
-        gameOver();
+        //console.log("congrats!");
+        //gameOver();
+        //levelCreator(2);
+        currentLevel++;
+        game.state.start('Game');
     }
 
 }
@@ -418,8 +482,8 @@ function enterDoor(){
 
 function updateTimer(){
     if(completedLines%linesThreshold == 0){
-        loop.delay -= speedUp; // Accelerates the fall speed
-        scoreIncrement += scorePlus; // Make lines more rewarding
+        //loop.delay -= speedUp; // Accelerates the fall speed
+        //scoreIncrement += scorePlus; // Make lines more rewarding
     }
 }
 
@@ -721,6 +785,8 @@ Game.update = function(){
     //resetting buttons
     if (!game.input.activePointer.isDown) {
         joystick.frame = 0;
+        buttonA.frame = 0;
+        buttonB.frame = 0;
 
         player.body.velocity.x = 0;
         player.animations.stop();
@@ -875,6 +941,6 @@ Game.update = function(){
     }
 };
 
-Game.shutdown = function(){
-    document.getElementById('name').style.display = "none";
-};
+//Game.shutdown = function(){
+//    document.getElementById('name').style.display = "none";
+//};
