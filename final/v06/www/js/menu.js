@@ -11,6 +11,7 @@ Menu.preload = function(){
     // load font
     game.load.script('classic-arcade', 'js/webfontloader.js');
     
+    
     title = {
         font: '75px arcade', color: '#ffffff',
         fill: '#ffffff',

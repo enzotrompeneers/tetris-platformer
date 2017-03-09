@@ -43,6 +43,10 @@ var linesNeededToOpenDoor = 2;
 var doorOpened = false;
 var currentLevel = 1;
 
+//enzo
+var requireStyle;
+var requireText = "finish   2   lines";
+
 // Swipe controls => Yawuar
 var currentX = 0;
 
@@ -151,6 +155,15 @@ Game.radio = { // object that stores sound-related information
 };
 
 Game.preload = function() {
+    //enzo
+    requireStyle = {
+        font: '80px arcade',
+        color: '#ffffff',
+        fill: '#ffffff',
+        align: 'center'
+    };
+    //end
+
     game.load.spritesheet('blocks','assets/tetris_tiles.png',blockSize,blockSize,nbBlockTypes+1);
     game.load.spritesheet('sound','assets/sound.png',32,32); // Icon to turn sound on/off
     game.load.audio('move','assets/sound/move.mp3','assets/sound/move.ogg');
@@ -208,7 +221,12 @@ Game.create = function(){
         sceneSprites.push(spriteCol);
     }
 
-    pauseState = false;
+    //pause game while instruction overlay is running
+    pauseState = true;
+    game.time.events.add(3000, function() {
+        pauseState = false;
+    }, this);
+
     gameOverState = false;
 
 
@@ -339,12 +357,30 @@ function resetLevel() {
     completedLines = 0;
     door.frame = 0;
     fallenTetrominoes = 0;
+
+    showOverlay();
+}
+
+function showOverlay() {
+    blackOverlay = game.add.sprite(0,0,'blackOverlay');
+    blackOverlay.scale.setTo(1000,1000);
+    blackOverlay.alpha = 0.7;
+
+    var requirePosition = game.add.text(game.world.width / 2 - 280, game.world.height / 2 - 400, requireText, requireStyle);
+
+    game.time.events.add(3000, function() {
+        game.add.tween(requirePosition).to({y: 0}, 1500, Phaser.Easing.Linear.None, true);
+        game.add.tween(requirePosition).to({alpha: 0}, 1500, Phaser.Easing.Linear.None, true);
+        game.add.tween(blackOverlay).to({alpha: 0}, 1500, Phaser.Easing.Linear.None, true);
+    }, this);
+
 }
 
 function levelCreator(level) {
     currentLevel = level;
     switch (level) {
         case 1:
+            resetLevel();
             player.position.x = 32;
             player.position.y = game.world.height - 800;
 
