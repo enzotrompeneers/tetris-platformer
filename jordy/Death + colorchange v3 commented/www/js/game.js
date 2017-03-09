@@ -53,11 +53,8 @@ var currentX = 0;
 
 //***JORDY****
 var life = 3;
-
-var colorData = [];
-var counter = 0;
+var decreaseLife = 0;
 //STOP
-
 
 // the positions of each block of a tetromino with respect to its center (in cell coordinates)
 var offsets = {
@@ -184,7 +181,9 @@ Game.preload = function () {
 };
 
 Game.create = function () {
-    //adri adding background & control panel
+
+
+    //adri adding background & control panel    
     background = game.add.sprite(0, 0, 'background');
     background.scale.setTo(0.71, 0.7);
 
@@ -203,6 +202,18 @@ Game.create = function () {
     knopA.animations.play('wiggle');
     knopB.animations.add('wiggle', [0, 1], 2, true);
     knopB.animations.play('wiggle');
+
+    //JORDY
+    game.physics.startSystem(Phaser.Physics.ARCADE);
+
+    door = game.add.sprite(300, 700, 'door');
+    door.scale.setTo(2, 2);
+    game.physics.arcade.enable(door);
+    door.body.immovable = true;
+    door.animations.add('open', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 10, false);
+
+    createPLayer();
+    //STOP
 
     // swipe controls => Yawuar
     currentX = game.input.activePointer.x;
@@ -229,27 +240,10 @@ Game.create = function () {
 
 
     //Adrian's code
-    game.physics.startSystem(Phaser.Physics.ARCADE);
-    player = game.add.sprite(32, game.world.height - 800, 'dude');
-    player.scale.setTo(2, 2);
-    game.physics.arcade.enable(player);
-    player.body.bounce.y = 0.2;
-    player.body.gravity.y = 600;
-    player.body.collideWorldBounds = true;
-    //player.animations.add('left', [0, 1, 2, 3], 10, true);
-    //player.animations.add('right', [5, 6, 7, 8], 10, true);
-    player.animations.add('left', [0, 1, 2, 3], 10, true);
-    player.animations.add('right', [5, 6, 7, 8], 10, true);
-    player.frame = 4;
 
     platforms = game.add.group();
     platforms.enableBody = true;
 
-    door = game.add.sprite(300, 700, 'door');
-    door.scale.setTo(2, 2);
-    game.physics.arcade.enable(door);
-    door.body.immovable = true;
-    door.animations.add('open', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 10, false);
     //platforms.enableBody = true;
 
     //adding invisible button
@@ -327,6 +321,9 @@ Game.create = function () {
     Game.radio.music.loopFull();
 
     loop.delay -= speedUp * 5;
+    
+    //JORDY
+    game.time.events.loop(Phaser.Timer.SECOND*0.5, decreaseLifePoints, this);
 };
 
 //adrian's code
@@ -700,7 +697,6 @@ function gameOver() {
 Game.update = function () {
     //Adrian's code
 
-
     if (timeMoving >= allowTimeToMove) {
         allowPlayerMove = false;
         timeMoving = 0;
@@ -785,7 +781,7 @@ Game.update = function () {
     //STOP
 
 
-    currentMovementTimer += this.time.elapsed;
+        currentMovementTimer += this.time.elapsed;
     if (currentMovementTimer > movementLag) { // Prevent too rapid firing
         if (pause.isDown) {
             managePauseScreen();
@@ -847,24 +843,25 @@ Game.update = function () {
 //***JORDY****
 
 function lifeCounter() {
-    //start game new, but keep cache
-    //game.state.start('Game over',true,false);
+
+    decreaseLife += 1;
+    console.log("lifebuffer = " + decreaseLife);
 
     if (life > 0) {
-        
-        life -= 1;
-
-        if (door.x >= game.world.centerX) {
-            player.position.x = 100;
-            player.position.y = door.y;
-        } else {
-            player.position.x = game.world.width - 100;
-            player.position.y = door.y;
-        }
-        console.log("LIFE = " + life);
+        player.kill();
+        createPLayer();
     } else {
         player.kill();
         gameOver();
+    }
+}
+
+function decreaseLifePoints() {
+    if (decreaseLife != 0) {
+        life -= 1;
+        console.log("LIFE = " + life);
+        
+        decreaseLife = 0;
     }
 }
 
@@ -883,6 +880,30 @@ function changeColor() {
             platforms.children[i].loadTexture('blocks', rand);
         }
     }
+}
+
+function createPLayer() {
+
+    var positionX;
+    var positionY;
+
+    if (door.x >= game.world.centerX) {
+        positionX = 100;
+    } else {
+        positionX = game.world.width - 100;
+    }
+
+    player = game.add.sprite(positionX, positionY - 300, 'dude');
+    player.scale.setTo(2, 2);
+    game.physics.arcade.enable(player);
+    player.body.bounce.y = 0.2;
+    player.body.gravity.y = 600;
+    player.body.collideWorldBounds = true;
+    //player.animations.add('left', [0, 1, 2, 3], 10, true);
+    //player.animations.add('right', [5, 6, 7, 8], 10, true);
+    player.animations.add('left', [0, 1, 2, 3], 10, true);
+    player.animations.add('right', [5, 6, 7, 8], 10, true);
+    player.frame = 4;
 }
 
 //STOP
