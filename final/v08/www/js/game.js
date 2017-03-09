@@ -30,6 +30,10 @@ var queue = []; // contains the list the nbNext next tetrominoes to display
 var pauseState = false;
 var gameOverState = false;
 
+//enzo
+var gameWonState = false;
+//end enzo
+
 //Adrian's code
 var player;
 var platforms;
@@ -623,8 +627,10 @@ function enterDoor(){
 
         currentLevelsPlayed.push(1);
         localStorage.setItem('levels', currentLevelsPlayed);
+
+        gameWon();
         //game.state.start('Level');
-        chooseLevel();
+        //chooseLevel(); // --> deze wordt opgeroepen in gamewon()
     }
 
 }
@@ -928,12 +934,33 @@ function gameOver(){
     //Game.radio.playSound(Game.radio.gameOverSound);
     //stop
     makeShade();
-    var gameover = game.add.bitmapText(game.world.centerX, game.world.centerY, 'gameover', 'GAME OVER',64);
-    gameover.anchor.setTo(0.5);
+    var gameOver = game.add.text(0, game.world.height / 2 - 400, "Game Over", requireStyle);
+    gameOver.setTextBounds(game.world.width/2 - 200, 0, 400, 100);
+    //gameover.anchor.setTo(0.5);
     // Display the form to input your name for the leaderboard
     //commented out by adrian
     //document.getElementById("name").style.display =  "block";
 }
+
+// enzo won
+function gameWon(){
+    pauseState = true;
+    gameWonState = true;
+    game.input.keyboard.enabled = false;
+    Game.radio.music.pause();
+    //Game.radio.playSound(Game.radio.gameOverSound);
+    makeShade();
+    game.add.text(game.world.width / 2 - 330, game.world.height / 2 - 400, "congratulations", requireStyle);
+    game.add.text(game.world.width / 2 - 20, game.world.height / 2 - 200, ">>", requireStyle);
+
+    game.input.onDown.add(chooseLevel, this);
+    //var gameWon = game.add.bitmapText(game.world.centerX, game.world.centerY, 'gameover', 'CONGRATULATIONS',40);
+    //gameWon.anchor.setTo(0.5);
+    // Display the form to input your name for the leaderboard
+    //commented out by adrian
+    //document.getElementById("name").style.display =  "block";
+}
+// end enzo won
 
 Game.update = function(){
     //Adrian's code

@@ -30,6 +30,10 @@ var queue = []; // contains the list the nbNext next tetrominoes to display
 var pauseState = false;
 var gameOverState = false;
 
+//enzo
+var gameWonState = false;
+//end enzo
+
 //Adrian's code
 var player;
 var platforms;
