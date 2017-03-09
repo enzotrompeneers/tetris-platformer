@@ -69,7 +69,7 @@ Menu.create = function(){
     bg.alpha = 0.2;
 
     // check if game is pressed and start game
-    game.input.onDown.add(startGame, this);
+    game.input.onDown.add(chooseLevel, this);
     // title
     game.add.text(game.world.width / 2 - 165, game.world.height / 2 - 123, "tetris\nplatform", title);
     // press to start

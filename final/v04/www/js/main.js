@@ -5,6 +5,7 @@ var game = new Phaser.Game(gameWidth+menuWidth, numBlocksY*blockSize+blockSize, 
 game.state.add('Menu',Menu);
 game.state.add('Game',Game);
 game.state.add('Leaderboard',Leaderboard);
+game.state.add('Level',Levels);
 
 game.state.start('Menu');
 
@@ -25,6 +26,10 @@ function startGame(){
 
 function loadLeaderboard(){
     game.state.start('Leaderboard');
+}
+
+function chooseLevel() {
+	game.state.start('Level');
 }
 
 
