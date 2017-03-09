@@ -389,13 +389,15 @@ function resetLevel() {
     completedLines = 0;
     door.frame = 0;
     fallenTetrominoes = 0;
-
+    
+    //JORDY
     curPowerUp = undefined;
     movementSpeed = 150;
     playerJumpHeight = -450;
     tokens = 0;
     reuse = false;
     life = 3;
+    //...
 
     showOverlay();
     createPlayer();
