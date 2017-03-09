@@ -8,6 +8,8 @@ game.state.add('Level',Levels);
 
 game.state.start('Menu');
 
+var currentLevelsPlayed = [];
+
 //Place whine lines on the left and right sides of the game scene
 function placeSeparators(){
     var leftSeparator = game.add.graphics(0, 0);
@@ -21,7 +23,7 @@ function placeSeparators(){
 
 function startGame(){
     game.state.start('Game');
-    
+
 }
 
 function loadLeaderboard(){

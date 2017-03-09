@@ -2,7 +2,7 @@
 	var Levels = {};
 	var title, level;
 	var amountOfLevels = 9;
-	var levelsArr = [];
+	var levelsArr;
 
 	Levels.preload = function() {
 		title = {
@@ -28,6 +28,7 @@
 	};
 
 	Levels.create = function() {
+		levelsArr = []
 		// add bg to game world
 		var bg = game.add.tileSprite(0, 0, 768, 1344, 'bg');
 		// calculate the difference between the width of the game and of background
@@ -58,10 +59,14 @@
     			levelsArr.push(star);
     		}
     	}
-    //  Enables all kind of input actions on this image (click, etc)
-    levelsArr[0].inputEnabled = true;
 
-    levelsArr[0].events.onInputDown.add(startGame, this);
+			if(levelsArr) {
+				levelsArr[0].inputEnabled = true;
+				console.log("dit is de eerste element: " + levelsArr[0]);
+		    levelsArr[0].events.onInputDown.add(startGame, this);
+			}
+
+				//console.log("levels array = " + levelsArr);
 	};
 
 	Levels.update = function() {
