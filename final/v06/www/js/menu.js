@@ -10,19 +10,6 @@ var isOpen = false;
 Menu.preload = function(){
     // load font
     game.load.script('classic-arcade', 'js/webfontloader.js');
-    
-    
-    title = {
-        font: '75px arcade', color: '#ffffff',
-        fill: '#ffffff',
-        align: 'center'
-    };
-
-    start = {
-        font: '38px arcade', color: '#ffffff',
-        fill: '#ffffff',
-        align: 'center'
-    };
 
     //adri's scale to device (credit to enzo bby)
     game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
@@ -52,7 +39,17 @@ Menu.preload = function(){
     // load settings btn
     game.load.image('settings', 'assets/settings.png');
     
-    
+    title = {
+        font: '75px arcade', color: '#ffffff',
+        fill: '#ffffff',
+        align: 'center'
+    };
+
+    start = {
+        font: '38px arcade', color: '#ffffff',
+        fill: '#ffffff',
+        align: 'center'
+    };
 
     //end code
 };
@@ -72,11 +69,6 @@ Menu.create = function(){
 
     // check if game is pressed and start game
     game.input.onDown.add(chooseLevel, this);
-    // title
-    game.add.text(game.world.width / 2 - 165, game.world.height / 2 - 123, "tetris\nplatform", title);
-    // press to start
-
-    game.add.text(game.world.width / 2 - 135.5, game.world.height - 100, "press  to  start", start);
 
     var settings = game.add.sprite(game.world.width - 70, 15, 'settings');
     settings.scale.setTo(0.7);
@@ -92,6 +84,12 @@ Menu.create = function(){
 
     door.animations.add('open', [0,1,2,3,4,5,6,7,8,9], 10, false);
     door.animations.add('close', [9, 8, 7, 6, 5, 4, 3, 2, 1, 0], 20, false);
+
+    // title
+    game.add.text(game.world.width / 2 - 165, game.world.height / 2 - 123, "tetris\nplatform", title);
+    // press to start
+
+    game.add.text(game.world.width / 2 - 135.5, game.world.height - 100, "press  to  start", start);
     
     //end code
 };
