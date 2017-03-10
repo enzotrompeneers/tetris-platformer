@@ -6,13 +6,13 @@ var blockSize = 64; // px
 var numBlocksY = 16; // make the grid 28 blocks high
 var numBlocksX = 12; // make the grid 18 blocks wide
 
-var gameWidth = numBlocksX * blockSize; // width of the grid in pixels (=768x1344)
+var gameWidth = numBlocksX*blockSize; // width of the grid in pixels (=768x1344)
 //var gameWidth = 576
 var menuWidth = 0; //adri's changed to 0. default = 300
 
 var movementLag = 100; // Delay in ms below which two consecutive key presses are counted as the same one (to avoid super fast movement)
 
-var scoreX = gameWidth + 90; // x position of the score text
+var scoreX = gameWidth+90; // x position of the score text
 
 var nbNext = 1; // number of next tetrominoes to display on the right
 var blockValue = 1; // value in the grid of a cell occupied by a block of a fallen tetromino
@@ -45,6 +45,9 @@ var door;
 var linesNeededToOpenDoor = 2;
 var doorOpened = false;
 var currentLevel = 1;
+var loop;
+
+var amountOfLinesDisplay
 
 //enzo
 var requireStyle;
@@ -61,74 +64,67 @@ var hart2;
 var hart3;
 
 var movementSpeed = 150;
-var playerJumpHeight = -450;
+var playerJumpHeight = -650;
 var curPowerUp;
 var tokens = 0;
 var reuse = false;
-
-//NIEUW
-var Ptext;
-var heartTween;
-var tetrisPhase;
-var playerPhase;
-var playerfase = true;
 //STOP
 
 // the positions of each block of a tetromino with respect to its center (in cell coordinates)
 var offsets = {
-    0: [[0, -1], [0, 0], [0, 1], [1, 1]], // L
-    1: [[0, -1], [0, 0], [0, 1], [-1, 1]], // J
-    2: [[-1, 0], [0, 0], [1, 0], [2, 0]], // I
-    3: [[-1, -1], [0, -1], [0, 0], [-1, 0]], // 0
-    4: [[-1, 0], [0, 0], [0, -1], [1, -1]], // S
-    5: [[-1, 0], [0, 0], [1, 0], [0, 1]], // T
-    6: [[-1, -1], [0, -1], [0, 0], [1, 0]] // Z
+    0 : [[0,-1],[0,0],[0,1],[1,1]], // L
+    1 : [[0,-1],[0,0],[0,1],[-1,1]], // J
+    2 : [[-1,0],[0,0],[1,0],[2,0]], // I
+    3 : [[-1,-1],[0,-1],[0,0],[-1,0]], // 0
+    4 : [[-1,0],[0,0],[0,-1],[1,-1]],// S
+    5 : [[-1,0],[0,0],[1,0],[0,1]], // T
+    6 : [[-1,-1],[0,-1],[0,0],[1,0]] // Z
 };
 
 // the y position of each tetromino (in cell coordinates)
 var y_start = {
-    0: 1,
-    1: 1,
-    2: 0,
-    3: 1,
-    4: 1,
-    5: 0,
-    6: 1
+    0 : 1,
+    1 : 1,
+    2 : 0,
+    3 : 1,
+    4 : 1,
+    5 : 0,
+    6 : 1
 };
 // The amount of cells ([x,y]) by which the tetrominoes move in each direction
 var move_offsets = {
-    "left": [-1, 0],
-    "down": [0, 1],
-    "right": [1, 0]
+    "left" : [-1,0],
+    "down" : [0,1],
+    "right" : [1,0]
 };
 
 // Lots of global variables ; should encapsulate more in future work
-var tetromino, cursors, rotates, pause, pauseText, scoreTitle, scoreText, linesText, scene, sceneSprites, timer, loop, shade;
+var tetromino, cursors, rotates, pause, pauseText, scoreTitle, scoreText, linesText, scene, sceneSprites, timer, loop,  shade;
 var currentMovementTimer = 0; // counter to prevent excessive movements when key press or multiple key downs
 
 // The Tetromino object used to represent the falling tetromino
-function Tetromino() {
+function Tetromino(){
     this.shape = Math.floor(Math.random() * nbBlockTypes);
     this.color = Math.floor(Math.random() * nbBlockTypes);
     this.sprites = []; // list of the sprites of each block
     this.cells = []; // list of the cells occupied by the tetromino
-    this.center = [0, 0];
+    this.center = [0,0];
     // materialize makes the tetromino appear, either in the scene (inGame = true) or on the right (inGame = false) if it's the next tetromino
-    this.materialize = function (c_x, c_y, inGame) {
-        this.center = [c_x, c_y];
+    this.materialize = function(c_x,c_y,inGame) {
+        this.center = [c_x,c_y];
         this.cells = [];
         // clean previous sprites if any
-        for (var j = 0; j < this.sprites.length; j++) {
+        for(var j = 0; j < this.sprites.length; j++){
             this.sprites[j].destroy();
         }
         this.sprites = [];
         var conflict = false; // Are there occupied cells where the tetrominon will appear? If yes -> game over
-        for (var i = 0; i < blocksPerTetromino; i++) {
+        for(var i = 0; i < blocksPerTetromino; i++) {
             // Compute the coordinates of each block of the tetromino, using it's offset from the center
             var x = c_x + offsets[this.shape][i][0];
             var y = c_y + offsets[this.shape][i][1];
             var sprite = game.add.sprite(x * blockSize, y * blockSize, 'blocks', this.color);
-
+            
             //adrian's code
             platforms.add(sprite);
             sprite.body.immovable = true;
@@ -137,7 +133,7 @@ function Tetromino() {
             this.sprites.push(sprite);
             this.cells.push([x, y]);
             if (inGame) {
-                if (!validateCoordinates(x, y)) {
+                if(!validateCoordinates(x,y)){
                     conflict = true;
                 }
                 scene[x][y] = blockValue; // 1 for blocks of current tetromino, 2 for fallen blocks
@@ -148,50 +144,61 @@ function Tetromino() {
 }
 
 Game.radio = { // object that stores sound-related information
-    soundOn: true,
-    moveSound: null,
-    gameOverSound: null,
-    winSound: null,
-    music: null,
+    soundOn : true,
+    moveSound : null,
+    gameOverSound : null,
+    winSound : null,
+    music : null,
     // Play music if all conditions are met
-    playMusic: function () {
-        if (Game.radio.soundOn && !pauseState) {
+    playMusic : function(){
+        if(Game.radio.soundOn && !pauseState){
             Game.radio.music.resume();
         }
     },
     // Toggle sound on/off
-    manageSound: function (sprite) {
-        sprite.frame = 1 - sprite.frame;
+    manageSound : function(sprite){
+        sprite.frame = 1- sprite.frame;
         Game.radio.soundOn = !Game.radio.soundOn;
-        if (Game.radio.soundOn) {
+        if(Game.radio.soundOn){
             Game.radio.playMusic();
-        } else {
+        }else{
             Game.radio.music.pause();
         }
     },
     // Play sound if all conditions are met
-    playSound: function (sound) {
+    playSound : function(sound) {
         if (Game.radio.soundOn && !pauseState) {
             sound.play();
         }
     }
 };
 
-Game.preload = function () {
+Game.preload = function() {
     //enzo
     requireStyle = {
         font: '80px arcade',
         color: '#ffffff',
         fill: '#ffffff',
-        align: 'center'
+        align: 'center',
+        boundsAlignH: "center",
+        boundsAlignV: "middle"
+    };
+
+    gameOverStyle = {
+        font: '160px arcade',
+        color: '#ffffff',
+        fill: '#ffffff',
+        align: 'center',
+        boundsAlignH: "center",
+        boundsAlignV: "middle"
     };
     //end
 
-    game.load.spritesheet('blocks', 'assets/tetris_tiles.png', blockSize, blockSize, nbBlockTypes + 1);
-    game.load.spritesheet('sound', 'assets/sound.png', 32, 32); // Icon to turn sound on/off
-    game.load.audio('move', 'assets/sound/move.mp3', 'assets/sound/move.ogg');
-    game.load.audio('win', 'assets/sound/win.mp3', 'assets/sound/win.ogg');
-    game.load.audio('gameover', 'assets/sound/gameover.mp3', 'assets/sound/gameover.ogg');
+    game.load.spritesheet('blocks','assets/tetris_tiles.png',blockSize,blockSize,nbBlockTypes+1);
+    game.load.spritesheet('sound','assets/sound.png',32,32); // Icon to turn sound on/off
+    game.load.audio('move','assets/sound/move.mp3','assets/sound/move.ogg');
+    game.load.audio('win','assets/sound/win.mp3','assets/sound/win.ogg');
+    game.load.audio('gameover','assets/sound/gameover.mp3','assets/sound/gameover.ogg');
 
     //jordy
     game.load.spritesheet('blockgrey', 'assets/blocksgrey.png');
@@ -210,31 +217,34 @@ Game.preload = function () {
     //game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
     game.load.image('background', 'assets/final_background_zonder_controlers.png');
     game.load.spritesheet('dude', 'assets/charv03.png', 50, 64);
-    game.load.spritesheet('door', 'assets/door_spritesheet.png', 60, 64);
+    game.load.spritesheet('door','assets/door_spritesheet.png', 60,64);
+
+    game.load.image('hamburger', 'assets/menu_button.png');
+    game.load.image('replay', 'assets/replay_button.png');
 
     game.load.image('blackOverlay', 'assets/blackoverlay.png');
     //end of code
 };
 
-Game.create = function () {
+Game.create = function(){
     //adri adding background & control panel
-    background = game.add.sprite(0, 0, 'background');
-    background.scale.setTo(0.71, 0.7);
+    background = game.add.sprite(0,0,'background');
+    background.scale.setTo(0.71,0.7); 
 
     joystick = game.add.sprite(75, game.world.height - 275, 'joystick');
-    joystick.scale.setTo(1.4, 1.4);
+    joystick.scale.setTo(1.4,1.4);
 
-    joystick.animations.add('moveLeft', [0, 1, 2], 15, false);
-    joystick.animations.add('moveRight', [0, 3, 4], 15, false);
+    joystick.animations.add('moveLeft', [0,1,2],15,false);
+    joystick.animations.add('moveRight', [0,3,4],15,false);
 
-    joystick.animations.add('wiggle', [0, 1, 2, 1, 0, 3, 4, 3], 2, true);
+    joystick.animations.add('wiggle', [0,1,2,1,0,3,4,3], 2, true);
     //joystick.animations.play('wiggle');
 
 
     buttonA = game.add.sprite(450, game.world.height - 255, 'knopA');
-    buttonA.scale.setTo(1.3, 1.3);
+    buttonA.scale.setTo(1.3,1.3);
     buttonB = game.add.sprite(602, game.world.height - 255, 'knopB');
-    buttonB.scale.setTo(1.3, 1.3);
+    buttonB.scale.setTo(1.3,1.3);
 
     // swipe controls => Yawuar
     currentX = game.input.activePointer.x;
@@ -245,10 +255,10 @@ Game.create = function () {
     scene = [];
     sceneSprites = []; // same but stores sprites instead
     // Fills the two arrays with empty cells
-    for (var i = 0; i < numBlocksX; i++) {
+    for(var i = 0; i < numBlocksX; i++){
         var col = [];
         var spriteCol = [];
-        for (var j = 0; j < numBlocksY; j++) {
+        for(var j = 0; j < numBlocksY; j++) {
             col.push(0);
             spriteCol.push(null);
         }
@@ -258,7 +268,7 @@ Game.create = function () {
 
     //pause game while instruction overlay is running
     pauseState = true;
-    game.time.events.add(3000, function () {
+    game.time.events.add(3000, function() {
         pauseState = false;
     }, this);
 
@@ -270,21 +280,21 @@ Game.create = function () {
 
     //adding player
     player = game.add.sprite(-50, 0, 'dude');
-    player.scale.setTo(2, 2);
+    player.scale.setTo(2,2);
     game.physics.arcade.enable(player);
     player.body.bounce.y = 0.2;
-    player.body.gravity.y = 600;
+    player.body.gravity.y = 1200;
     player.body.collideWorldBounds = true;
     player.animations.add('left', [0, 1, 2, 3], 10, true);
     player.animations.add('right', [5, 6, 7, 8], 10, true);
     player.frame = 4;
-
+    
     //adding door
     door = game.add.sprite(300, 700, 'door');
-    door.scale.setTo(2, 2);
+    door.scale.setTo(2,2);
     game.physics.arcade.enable(door);
     door.body.immovable = true;
-    door.animations.add('open', [0, 1, 2, 3, 4, 5, 6, 7, 8, 9], 10, false);
+    door.animations.add('open', [0,1,2,3,4,5,6,7,8,9], 10, false);
 
     platforms = game.add.group();
     platforms.enableBody = true;
@@ -308,11 +318,11 @@ Game.create = function () {
     //platforms.enableBody = true;
 
     //adding invisible buttons
-    invisibleButtonLeft = new Phaser.Rectangle(0, game.world.height - 320, 220, 320);
-    invisibleButtonRight = new Phaser.Rectangle(220, game.world.height - 320, 220, 300);
+    invisibleButtonLeft = new Phaser.Rectangle(0, game.world.height - 320,220,320);
+    invisibleButtonRight = new Phaser.Rectangle(220, game.world.height - 320,220,300);
 
-    invisibleButtonA = new Phaser.Rectangle(450, game.world.height - 255, 130, 130);
-    invisibleButtonB = new Phaser.Rectangle(602, game.world.height - 255, 130, 130);
+    invisibleButtonA = new Phaser.Rectangle(450, game.world.height - 255,130,130);
+    invisibleButtonB = new Phaser.Rectangle(602, game.world.height - 255,130,130);
     //listen for pointers
     game.input.onDown.add(handlePointerDown);
 
@@ -323,12 +333,12 @@ Game.create = function () {
     // Places separator between the scene and the right pannel
     var middleSeparator = game.add.graphics(gameWidth, 0);
     middleSeparator.lineStyle(3, 0xffffff, 1);
-    middleSeparator.lineTo(0, game.world.height);
+    middleSeparator.lineTo(0,game.world.height);
     placeSeparators();
 
     //adrian's code
     //game.add.tileSprite(0,game.world.height-blockSize,gameWidth,blockSize,'blocks',0); // ground
-    var ground = game.add.tileSprite(0, game.world.height - blockSize - 256, gameWidth, blockSize, 'blocks', 1); // ground
+    var ground = game.add.tileSprite(0,game.world.height-blockSize-256,gameWidth,blockSize,'blocks',1); // ground
     ground.alpha = 0;
     platforms.add(ground);
     ground.body.immovable = true;
@@ -342,14 +352,14 @@ Game.create = function () {
     //sound.events.onInputDown.add(Game.radio.manageSound, this);
 
     // Text for the score, number of lines, next tetromino
-    scoreTitle = game.add.bitmapText(gameWidth + 50, 0, 'desyrel', 'Score', 64);
+    scoreTitle = game.add.bitmapText(gameWidth+50, 0, 'desyrel', 'Score',64);
     scoreText = game.add.bitmapText(scoreX, 60, 'desyrel', '0', 64);
-    var linesTitle = game.add.bitmapText(gameWidth + 50, 140, 'desyrel', 'Lines', 64);
+    var linesTitle = game.add.bitmapText(gameWidth+50, 140, 'desyrel', 'Lines',64);
     linesText = game.add.bitmapText(scoreX, 200, 'desyrel', '0', 64);
-    var nextTitle = game.add.bitmapText(gameWidth + 75, 300, 'desyrel', 'Next', 64);
+    var nextTitle = game.add.bitmapText(gameWidth+75, 300, 'desyrel', 'Next',64);
     alignText();
-    nextTitle.x = scoreTitle.x + scoreTitle.textWidth / 2 - (nextTitle.textWidth * 0.5);
-    linesTitle.x = scoreTitle.x + scoreTitle.textWidth / 2 - (linesTitle.textWidth * 0.5);
+    nextTitle.x = scoreTitle.x + scoreTitle.textWidth/2 - (nextTitle.textWidth * 0.5);
+    linesTitle.x = scoreTitle.x + scoreTitle.textWidth/2 - (linesTitle.textWidth * 0.5);
 
     // spawn a new tetromino and the scene and update the next one
     manageTetrominos();
@@ -366,7 +376,7 @@ Game.create = function () {
     cursors = game.input.keyboard.createCursorKeys();
     // Rotation keys
     rotates = {
-        counterClockwise: game.input.keyboard.addKey(Phaser.Keyboard[document.getElementById("rotateright").value]),
+        counterClockwise : game.input.keyboard.addKey(Phaser.Keyboard[document.getElementById("rotateright").value]),
         clockwise: game.input.keyboard.addKey(Phaser.Keyboard[document.getElementById("rotateleft").value])
     };
     pause = game.input.keyboard.addKey(Phaser.Keyboard[document.getElementById("pause").value]);
@@ -381,14 +391,61 @@ Game.create = function () {
     Game.radio.winSound = game.add.audio('win');
     Game.radio.gameOverSound = game.add.audio('gameover');
     Game.radio.music = game.add.audio('music');
-    Game.radio.music.volume = 0.0; //adri turned 0.2 -> 0.0
+    Game.radio.music.volume = 0.2; //adri turned 0.2 -> 0.0
     Game.radio.music.loopFull();
 
-    loop.delay -= speedUp * 5;
+    loop.delay = 500;
 
-    //NIEUW
-    Ptext = game.add.bitmapText(30, 100, 'videogame', '', 18);
-    //STOP
+    //difficulty
+    switch (currentLevel) {
+        case 1:
+            loop.delay = 500;
+            allowTimeToMove = 300;
+            break;
+        case 2:
+            loop.delay = 500;
+            allowTimeToMove = 300;
+            break;
+        case 3:
+            loop.delay = 500;
+            allowTimeToMove = 300;
+            break;
+        case 4:
+            loop.delay = 400;
+            allowTimeToMove = 240;
+            break;
+        case 5:
+            loop.delay = 400;
+            allowTimeToMove = 240;
+            break;
+        case 6:
+            loop.delay = 400;
+            allowTimeToMove = 240;
+            break;
+        case 7:
+            loop.delay = 300;
+            allowTimeToMove = 180;
+            break;
+        case 8:
+            loop.delay = 300;
+            allowTimeToMove = 120;
+            break;
+        case 9:
+            loop.delay = 200;
+            allowTimeToMove = 120;
+            break;
+    }
+
+    //adriaan & enzo completed lines
+    amountOfLinesDisplay = game.add.text(0, 20, completedLines+"/"+linesNeededToOpenDoor, requireStyle);
+    amountOfLinesDisplay.setTextBounds(game.world.width - 300, 0, 400, 100);
+
+    //adriaan & enzo timer countdown
+    timePlaying = game.add.text(0, 50, timeMoving, gameOverStyle);
+    timePlaying.setTextBounds(game.world.width/2-200, 0, 400, 100);
+    timePlaying.alpha = 0;
+
+    //stop
 };
 
 
@@ -407,7 +464,7 @@ function resetLevel() {
 
     curPowerUp = undefined;
     movementSpeed = 150;
-    playerJumpHeight = -450;
+    playerJumpHeight = -650;
     tokens = 0;
     reuse = false;
     life = 3;
@@ -417,22 +474,16 @@ function resetLevel() {
 }
 
 function showOverlay() {
-    blackOverlay = game.add.sprite(0, 0, 'blackOverlay');
-    blackOverlay.scale.setTo(1000, 1000);
+    blackOverlay = game.add.sprite(0,0,'blackOverlay');
+    blackOverlay.scale.setTo(1000,1000);
     blackOverlay.alpha = 0.7;
 
     var requirePosition = game.add.text(game.world.width / 2 - 280, game.world.height / 2 - 400, requireText, requireStyle);
 
-    game.time.events.add(3000, function () {
-        game.add.tween(requirePosition).to({
-            y: 0
-        }, 1500, Phaser.Easing.Linear.None, true);
-        game.add.tween(requirePosition).to({
-            alpha: 0
-        }, 1500, Phaser.Easing.Linear.None, true);
-        game.add.tween(blackOverlay).to({
-            alpha: 0
-        }, 1500, Phaser.Easing.Linear.None, true);
+    game.time.events.add(3000, function() {
+        game.add.tween(requirePosition).to({y: 0}, 1500, Phaser.Easing.Linear.None, true);
+        game.add.tween(requirePosition).to({alpha: 0}, 1500, Phaser.Easing.Linear.None, true);
+        game.add.tween(blackOverlay).to({alpha: 0}, 1500, Phaser.Easing.Linear.None, true);
     }, this);
 
 }
@@ -451,167 +502,167 @@ function createPlayer() {
     player.position.y = 100;
 }
 
-function levelCreator(currentLevel)  {
+function levelCreator(currentLevel) {
     //currentLevel = level;
     switch (currentLevel) {
-    case 1:
-        requireText = "get  to  the  door";
-        resetLevel();
-        door.position.x = 150;
-        door.position.y = 600;
+        case 1:
+            requireText = "get  to  the  door";
+            resetLevel();
+            door.position.x = 150;
+            door.position.y = 600;
 
-        linesNeededToOpenDoor = 0;
-        doorOpened = true;
-        openDoor();
-        break;
+            linesNeededToOpenDoor = 0;
+            doorOpened = true;
+            openDoor();
+            break;
 
-    case 2:
-        requireText = "clear   2   lines";
-        resetLevel();
-        door.position.x = 300;
-        door.position.y = 650;
+        case 2:
+            requireText = "clear   2   lines";
+            resetLevel();
+            door.position.x = 300;
+            door.position.y = 650;
 
-        linesNeededToOpenDoor = 2;
-        doorOpened = false;
-        break;
+            linesNeededToOpenDoor = 2;
+            doorOpened = false;
+            break;
 
-    case 3:
-        requireText = "clear   4   lines";
-        resetLevel();
-        door.position.x = 300;
-        door.position.y = 300;
+        case 3:
+            requireText = "clear   4   lines";
+            resetLevel();
+            door.position.x = 300;
+            door.position.y = 650;
 
-        linesNeededToOpenDoor = 4;
-        doorOpened = false;
-        break;
+            linesNeededToOpenDoor = 4;
+            doorOpened = false;
+            break;
 
-    case 4:
-        requireText = "clear   2   lines";
-        resetLevel();
-        door.position.x = 300;
-        door.position.y = 650;
+        case 4:
+            requireText = "clear   6   lines";
+            resetLevel();
+            door.position.x = 500;
+            door.position.y = 600;
 
-        linesNeededToOpenDoor = 2;
-        doorOpened = false;
-        break;
+            linesNeededToOpenDoor = 6;
+            doorOpened = false;
+            break;
 
-    case 5:
-        requireText = "clear   2   lines";
-        resetLevel();
-        door.position.x = 300;
-        door.position.y = 650;
+        case 5:
+            requireText = "clear   4   lines";
+            resetLevel();
+            door.position.x = 300;
+            door.position.y = 900;
 
-        linesNeededToOpenDoor = 2;
-        doorOpened = false;
-        break;
+            linesNeededToOpenDoor = 4;
+            doorOpened = false;
+            break;
 
-    case 6:
-        requireText = "clear   2   lines";
-        resetLevel();
-        door.position.x = 300;
-        door.position.y = 650;
+        case 6:
+            requireText = "clear   6   lines";
+            resetLevel();
+            door.position.x = 50;
+            door.position.y = 150;
 
-        linesNeededToOpenDoor = 2;
-        doorOpened = false;
-        break;
+            linesNeededToOpenDoor = 6;
+            doorOpened = false;
+            break;
 
-    case 7:
-        requireText = "clear   2   lines";
-        resetLevel();
-        door.position.x = 300;
-        door.position.y = 650;
+        case 7:
+            requireText = "clear   8   lines";
+            resetLevel();
+            door.position.x = 600;
+            door.position.y = 150;
 
-        linesNeededToOpenDoor = 2;
-        doorOpened = false;
-        break;
+            linesNeededToOpenDoor = 8;
+            doorOpened = false;
+            break;
 
-    case 8:
-        requireText = "clear   2   lines";
-        resetLevel();
-        door.position.x = 300;
-        door.position.y = 650;
+        case 8:
+            requireText = "clear   14   lines";
+            resetLevel();
+            door.position.x = 500;
+            door.position.y = 900;
 
-        linesNeededToOpenDoor = 2;
-        doorOpened = false;
-        break;
+            linesNeededToOpenDoor = 14;
+            doorOpened = false;
+            break;
 
-    case 9:
-        requireText = "clear   2   lines";
-        resetLevel();
-        door.position.x = 300;
-        door.position.y = 650;
+        case 9:
+            requireText = "clear   20   lines";
+            resetLevel();
+            door.position.x = game.world.width/2;
+            door.position.y = 50;
 
-        linesNeededToOpenDoor = 2;
-        doorOpened = false;
-        break;
+            linesNeededToOpenDoor = 20;
+            doorOpened = false;
+            break;
     }
 }
 
 //handle a touch/click
-handlePointerDown = function (pointer) {
-        var insideA = invisibleButtonA.contains(pointer.x, pointer.y)
-        var insideB = invisibleButtonB.contains(pointer.x, pointer.y)
+handlePointerDown = function(pointer){
+    var insideA = invisibleButtonA.contains(pointer.x,pointer.y)
+    var insideB = invisibleButtonB.contains(pointer.x,pointer.y)
 
-        var insideLeft = invisibleButtonLeft.contains(pointer.x, pointer.y)
-        var insideRight = invisibleButtonRight.contains(pointer.x, pointer.y)
+    var insideLeft = invisibleButtonLeft.contains(pointer.x,pointer.y)
+    var insideRight = invisibleButtonRight.contains(pointer.x,pointer.y)
 
-        if (insideLeft) {
-            joystick.animations.play('moveLeft');
-            if (allowPlayerMove) {
-                //moving player left
-                player.body.velocity.x = -movementSpeed;
-                player.animations.play('left');
-            } else {
-                //moving block left
-                if (canMove(slide, "left")) {
-                    move(slide, slideCenter, "left", 1);
-                }
+    if (insideLeft) {
+        joystick.animations.play('moveLeft');
+        if (allowPlayerMove) {
+            //moving player left
+            player.body.velocity.x = -movementSpeed;
+            player.animations.play('left');
+        } else {
+            //moving block left
+            if(canMove(slide,"left")){
+            move(slide,slideCenter,"left",1);
             }
-        }
-
-        if (insideRight) {
-            //moving player right
-            joystick.animations.play('moveRight');
-            if (allowPlayerMove) {
-                //moving player right
-                player.body.velocity.x = movementSpeed;
-                player.animations.play('right');
-            } else {
-                //moving block right
-                if (canMove(slide, "right")) {
-                    move(slide, slideCenter, "right", 1);
-                }
-            }
-        }
-
-        if (insideA) {
-            buttonA.frame = 1;
-        }
-        if (insideB) {
-            buttonB.frame = 1;
-        }
-
-        if (insideA && !allowPlayerMove) {
-            if (canMove(rotate, "clockwise")) {
-                move(rotate, null, "clockwise", 1); //rotate block
-            }
-        } else if (insideA && allowPlayerMove && player.body.touching.down) {
-            player.body.velocity.y = playerJumpHeight; //jump player
-        }
-
-        if (insideB && !allowPlayerMove) {
-            if (canMove(slide, "down")) {
-                move(slide, slideCenter, "down", 1); //slide block down 1
-            }
-        } else if (insideB && allowPlayerMove) {
-            usePowerup();
         }
     }
-    //end of adrian's code
+    
+    if (insideRight) {
+        //moving player right
+        joystick.animations.play('moveRight');
+        if (allowPlayerMove) {
+            //moving player right
+            player.body.velocity.x = movementSpeed;
+            player.animations.play('right');
+        } else {
+            //moving block right
+            if(canMove(slide,"right")){
+            move(slide,slideCenter,"right",1);
+            }
+        }
+    }
+
+    if (insideA) {
+        buttonA.frame = 1;
+    }
+    if (insideB) {
+        buttonB.frame = 1;
+    }
+
+    if (insideA && !allowPlayerMove) {
+        if(canMove(rotate,"clockwise")){
+            move(rotate,null,"clockwise",1); //rotate block
+        }
+    }else if (insideA && allowPlayerMove && player.body.touching.down){
+            player.body.velocity.y = playerJumpHeight; //jump player
+    }
+
+    if (insideB && !allowPlayerMove) {
+        if(canMove(slide,"down")){
+            move(slide,slideCenter,"down",1); //slide block down 1
+        }
+    }else if(insideB && allowPlayerMove){
+            usePowerup();
+    }
+} 
+//end of adrian's code
 
 
 
-function updateScore() {
+function updateScore(){
     score += scoreIncrement;
     completedLines++;
     scoreText.text = score;
@@ -620,7 +671,7 @@ function updateScore() {
     updateTimer();
 
     //adrian's code
-    if (completedLines >= linesNeededToOpenDoor && !doorOpened) {
+    if (completedLines >= linesNeededToOpenDoor && !doorOpened){
         doorOpened = true;
         openDoor();
     }
@@ -630,11 +681,11 @@ function updateScore() {
 
 //adrian's code
 
-function openDoor() {
+function openDoor(){
     door.animations.play('open');
 }
 
-function enterDoor() {
+function enterDoor(){
     if (doorOpened) {
         //console.log("congrats!");
         //gameOver();
@@ -654,35 +705,35 @@ function enterDoor() {
 
 //end of code
 
-function updateTimer() {
-    if (completedLines % linesThreshold == 0) {
+function updateTimer(){
+    if(completedLines%linesThreshold == 0){
         //loop.delay -= speedUp; // Accelerates the fall speed
         //scoreIncrement += scorePlus; // Make lines more rewarding
     }
 }
 
-function alignText() {
-    var center = scoreTitle.x + scoreTitle.textWidth / 2;
+function alignText(){
+    var center = scoreTitle.x + scoreTitle.textWidth/2;
     scoreText.x = center - (scoreText.textWidth * 0.5);
     linesText.x = center - (linesText.textWidth * 0.5);
 }
 
-function manageTetrominos() {
+function manageTetrominos(){
     // Keep the queue filled with as many tetrominos as needed
 
     //console.log("manageTetrominos");
 
 
-    while (queue.length < nbNext + 1) {
+    while(queue.length < nbNext+1) {
         queue.unshift(new Tetromino()); // adds at beginning of array
     }
     tetromino = queue.pop(); // the last one will be put on the stage
-    var start_x = Math.floor(numBlocksX / 2);
+    var start_x = Math.floor(numBlocksX/2);
     var start_y = y_start[tetromino.shape];
-    var conflict = tetromino.materialize(start_x, start_y, true);
-    if (conflict) {
+    var conflict = tetromino.materialize(start_x,start_y,true);
+    if(conflict){
         gameOver();
-    } else {
+    }else{
         // display the next tetromino(s)
         for (var i = 0; i < queue.length; i++) {
             var s_x = Math.floor((scoreTitle.x + scoreTitle.textWidth / 2) / 32);
@@ -693,32 +744,32 @@ function manageTetrominos() {
 }
 
 // Send the score to the database
-function sendScore() {
+function sendScore(){
     var xhr = new XMLHttpRequest();
     xhr.open("POST", "server.php", true);
     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-    xhr.onload = function () {};
+    xhr.onload = function(){};
     // Not much is done to prevent players to tamper with the score because it would have been overkill for such a toy project
-    var data = "add=1&name=" + document.getElementById('playername').value + "&score=" + score;
+    var data = "add=1&name="+document.getElementById('playername').value+"&score="+score;
     xhr.send(data);
 }
 
 // Move a block of the falling tetromino left, right or down
-function slide(block, dir) {
+function slide(block,dir){
     var new_x = tetromino.cells[block][0] + move_offsets[dir][0];
     var new_y = tetromino.cells[block][1] + move_offsets[dir][1];
-    return [new_x, new_y];
+    return [new_x,new_y];
 }
 
 // Move the center of the falling tetromino left, right or down
-function slideCenter(dir) {
+function slideCenter(dir){
     var new_center_x = tetromino.center[0] + move_offsets[dir][0];
     var new_center_y = tetromino.center[1] + move_offsets[dir][1];
-    return [new_center_x, new_center_y];
+    return [new_center_x,new_center_y];
 }
 
 // Rotate a block of the falling tetromino (counter)clockwise
-function rotate(block, dir) {
+function rotate(block,dir){
     var c_x = tetromino.center[0];
     var c_y = tetromino.center[1];
     var offset_x = tetromino.cells[block][0] - c_x;
@@ -729,35 +780,35 @@ function rotate(block, dir) {
     new_offset_y = -new_offset_y;
     var new_x = c_x + new_offset_x;
     var new_y = c_y + new_offset_y;
-    return [new_x, new_y];
+    return [new_x,new_y];
 }
 
 // Uses the passed callback to check if the desired move (slide or rotate) doesn't conflict with something
-function canMove(coordinatesCallback, dir) {
-    if (pauseState) {
+function canMove(coordinatesCallback,dir){
+    if(pauseState){
         return false;
     }
-    for (var i = 0; i < tetromino.cells.length; i++) {
-        var new_coord = coordinatesCallback(i, dir); // return coords in terms of cells, not pixels
+    for(var i = 0; i < tetromino.cells.length; i++){
+        var new_coord = coordinatesCallback(i,dir); // return coords in terms of cells, not pixels
         var new_x = new_coord[0];
         var new_y = new_coord[1];
-        if (!validateCoordinates(new_x, new_y)) {
+        if(!validateCoordinates(new_x,new_y)){
             return false;
         }
     }
     return true;
 }
 
-function validateCoordinates(new_x, new_y) {
-    if (new_x < 0 || new_x > numBlocksX - 1) {
+function validateCoordinates(new_x,new_y){
+    if(new_x < 0 || new_x > numBlocksX-1){
         //console.log('Out of X bounds');
         return false;
     }
-    if (new_y < 0 || new_y > numBlocksY - 1) {
+    if(new_y < 0 || new_y > numBlocksY-1){
         //console.log('Out of Y bounds');
         return false;
     }
-    if (scene[new_x][new_y] == occupiedValue) {
+    if(scene[new_x][new_y] == occupiedValue){
         //console.log('Cell is occupied');
         return false;
     }
@@ -765,32 +816,32 @@ function validateCoordinates(new_x, new_y) {
 }
 
 // Move (slide or rotate) a tetromino according to the provided callback
-function move(coordinatesCallback, centerCallback, dir, soundOnMove) {
-    for (var i = 0; i < tetromino.cells.length; i++) {
+function move(coordinatesCallback,centerCallback,dir,soundOnMove){
+    for(var i = 0; i < tetromino.cells.length; i++){
         var old_x = tetromino.cells[i][0];
         var old_y = tetromino.cells[i][1];
-        var new_coord = coordinatesCallback(i, dir);
+        var new_coord = coordinatesCallback(i,dir);
         var new_x = new_coord[0];
         var new_y = new_coord[1];
         tetromino.cells[i][0] = new_x;
         tetromino.cells[i][1] = new_y;
-        tetromino.sprites[i].x = new_x * blockSize;
-        tetromino.sprites[i].y = new_y * blockSize;
+        tetromino.sprites[i].x = new_x*blockSize;
+        tetromino.sprites[i].y = new_y*blockSize;
         scene[old_x][old_y] = 0;
         scene[new_x][new_y] = blockValue;
     }
-    if (centerCallback) {
+    if(centerCallback) {
         var center_coord = centerCallback(dir);
-        tetromino.center = [center_coord[0], center_coord[1]];
+        tetromino.center = [center_coord[0],center_coord[1]];
     }
-    if (soundOnMove) {
+    if(soundOnMove) {
         Game.radio.playSound(Game.radio.moveSound);
     }
 }
 
-function lineSum(l) {
+function lineSum(l){
     var sum = 0;
-    for (var k = 0; k < numBlocksX; k++) {
+    for(var k = 0; k < numBlocksX; k++){
         sum += scene[k][l];
     }
     return sum
@@ -799,10 +850,10 @@ function lineSum(l) {
 // check if the lines corresponding to the y coordinates in lines are full ; if yes, clear them and collapse the lines above
 function checkLines(lines) {
     var collapsedLines = [];
-    for (var j = 0; j < lines.length; j++) {
+    for(var j = 0; j < lines.length; j++){
         var sum = lineSum(lines[j]);
         // A line is completed if all the cells of that line are marked as occupied
-        if (sum == (numBlocksX * occupiedValue)) { // the line is full
+        if(sum == (numBlocksX*occupiedValue)) { // the line is full
             updateScore();
             collapsedLines.push(lines[j]);
             Game.radio.playSound(Game.radio.winSound);
@@ -810,23 +861,22 @@ function checkLines(lines) {
             //jordy
             assignPowerUp();
             //stop
+            amountOfLinesDisplay.text = completedLines+"/"+linesNeededToOpenDoor;
         }
     }
-    if (collapsedLines.length) {
+    if(collapsedLines.length){
         collapse(collapsedLines);
     }
 }
 
 // Remove all blocks from a filled line
-function cleanLine(line) {
+function cleanLine(line){
     console.log("kek");
     var delay = 0;
     for (var k = 0; k < numBlocksX; k++) {
         // Make a small animation to send the removed blocks flying to the top
         var tween = game.add.tween(sceneSprites[k][line]);
-        tween.to({
-            x: 0
-        }, 500, null, false, delay);
+        tween.to({ x: 0}, 500,null,false,delay);
         tween.onComplete.add(destroy, this);
         tween.start();
         sceneSprites[k][line] = null;
@@ -835,35 +885,33 @@ function cleanLine(line) {
     }
 }
 
-function destroy(sprite) {
+function destroy(sprite){
     sprite.destroy();
 }
 
 // Once a lone has been cleared, make the lines above it fall down ; the argument lines is a list of the y coordinates of the
 // lines that have been cleared
-function collapse(lines) {
+function collapse(lines){
     // Find the min y value of the cleared lines, i.e. the highermost cleared line ; only lines above that one have to collapse
     var min = 999;
-    for (var k = 0; k < lines.length; k++) {
-        if (lines[k] < min) {
+    for(var k = 0; k < lines.length; k++){
+        if(lines[k] < min){
             min = lines[k];
         }
     }
     // From the highermost cleared line - 1 to the top, collapse the lines
-    for (var i = min - 1; i >= 0; i--) {
-        for (var j = 0; j < numBlocksX; j++) {
-            if (sceneSprites[j][i]) {
+    for(var i = min-1; i >= 0; i--){
+        for(var j = 0; j < numBlocksX; j++){
+            if(sceneSprites[j][i]) {
                 // lines.length = the number of lines that have been cleared simultaneously
-                sceneSprites[j][i + lines.length] = sceneSprites[j][i];
+                sceneSprites[j][i+ lines.length] = sceneSprites[j][i];
                 sceneSprites[j][i] = null;
                 scene[j][i + lines.length] = occupiedValue;
                 scene[j][i] = 0;
                 // Make some animation to collapse the lines
-                var tween = game.add.tween(sceneSprites[j][i + lines.length]);
-                var new_y = sceneSprites[j][i + lines.length].y + (lines.length * blockSize);
-                tween.to({
-                    y: new_y
-                }, 500, null, false);
+                var tween = game.add.tween(sceneSprites[j][i+ lines.length]);
+                var new_y = sceneSprites[j][i+ lines.length].y + (lines.length * blockSize);
+                tween.to({ y: new_y}, 500,null,false);
                 tween.start();
             }
         }
@@ -879,20 +927,18 @@ function collapse(lines) {
     }
 }*/
 // Makes the falling tetromino fall
-function fall() {
+function fall(){
     //console.log("fall");
-    if (pauseState || gameOverState) {
-        return;
-    }
-    if (canMove(slide, "down")) {
-        move(slide, slideCenter, "down", 0);
-    } else { // If it cannot move down, it means it is touching fallen blocks ; it's time to see if a line has been completed
+    if(pauseState || gameOverState){return;}
+    if(canMove(slide,"down")){
+        move(slide,slideCenter,"down",0);
+    }else{ // If it cannot move down, it means it is touching fallen blocks ; it's time to see if a line has been completed
         // and to spawn a new falling tetromino
         var lines = [];
-        for (var i = 0; i < tetromino.cells.length; i++) {
+        for(var i = 0; i < tetromino.cells.length; i++){
             // Make a set of the y coordinates of the falling tetromino ; the lines corresponding to those y coordinates will be
             // checked to see if they are full
-            if (lines.indexOf(tetromino.cells[i][1]) == -1) { // if the value is not yet in the list ...
+            if(lines.indexOf(tetromino.cells[i][1]) == -1) { // if the value is not yet in the list ...
                 lines.push(tetromino.cells[i][1]);
             }
             var x = tetromino.cells[i][0];
@@ -911,11 +957,13 @@ function fall() {
 
         if (fallenTetrominoes >= 3) {
             allowPlayerMove = true;
+            timePlaying.alpha = 1;
+
         } else {
             manageTetrominos();
         }
-
-
+        
+        
 
         //end of code
 
@@ -926,22 +974,22 @@ function fall() {
 }
 
 // Puts a shade on the stage for the game over and pause screens
-function makeShade() {
+function makeShade(){
     shade = game.add.graphics(0, 0);
-    shade.beginFill(0x000000, 0.6);
-    shade.drawRect(0, 0, game.world.width, game.world.height);
+    shade.beginFill(0x000000,1);
+    shade.drawRect(0,0,game.world.width,game.world.height);
     shade.endFill();
 }
 
-function managePauseScreen() {
+function managePauseScreen(){
     pauseState = !pauseState;
-    if (pauseState) {
+    if(pauseState){
         Game.radio.music.pause();
         makeShade();
-        pauseText = game.add.bitmapText(game.world.centerX, game.world.centerY, 'videogame', 'PAUSE', 64);
+        pauseText = game.add.bitmapText(game.world.centerX, game.world.centerY, 'videogame', 'PAUSE',64);
         pauseText.anchor.setTo(0.5);
 
-    } else {
+    }else{
         timer.resume();
         Game.radio.playMusic();
         shade.clear();
@@ -949,7 +997,7 @@ function managePauseScreen() {
     }
 }
 
-function gameOver() {
+function gameOver(){
     gameOverState = true;
     game.input.keyboard.enabled = false;
     Game.radio.music.pause();
@@ -957,8 +1005,21 @@ function gameOver() {
     //Game.radio.playSound(Game.radio.gameOverSound);
     //stop
     makeShade();
-    var gameOver = game.add.text(0, game.world.height / 2 - 400, "Game Over", requireStyle);
-    gameOver.setTextBounds(game.world.width / 2 - 200, 0, 400, 100);
+    var gameOver = game.add.text(0, game.world.height / 2 - 400, "Game Over", gameOverStyle);
+    gameOver.setTextBounds(game.world.width/2 - 200, 0, 400, 100);
+
+    replayButton = game.add.sprite(game.world.width/10*3,game.world.height/5*3,'replay');
+    replayButton.scale.setTo(0.2,0.2);
+    replayButton.anchor.setTo(0.5);
+    replayButton.inputEnabled = true;
+    replayButton.events.onInputDown.add(startGame, this);
+
+    hamburger = game.add.sprite(game.world.width/10*7,game.world.height/5*3,'hamburger');
+    hamburger.scale.setTo(0.4,0.4);
+    hamburger.anchor.setTo(0.5);
+    hamburger.inputEnabled = true;
+    hamburger.events.onInputDown.add(chooseLevel, this);
+    
     //gameover.anchor.setTo(0.5);
     // Display the form to input your name for the leaderboard
     //commented out by adrian
@@ -966,7 +1027,7 @@ function gameOver() {
 }
 
 // enzo won
-function gameWon() {
+function gameWon(){
     pauseState = true;
     gameWonState = true;
     game.input.keyboard.enabled = false;
@@ -985,7 +1046,7 @@ function gameWon() {
 }
 // end enzo won
 
-Game.update = function () {
+Game.update = function(){
     //Adrian's code
 
     //resetting buttons
@@ -998,10 +1059,9 @@ Game.update = function () {
         player.animations.stop();
         player.frame = 4;
     }
-
-    //NIEUW
-    if (timeMoving >= allowTimeToMove && gameWonState == false) {
-    //STOP
+    
+    if (timeMoving >= allowTimeToMove) {
+        timePlaying.alpha = 0;
         allowPlayerMove = false;
         timeMoving = 0;
         fallenTetrominoes = -1;
@@ -1009,19 +1069,10 @@ Game.update = function () {
         player.frame = 4;
         //jordy
         changeColor();
-
-        //NIEUW
-        playerPhase = game.add.text(0, game.world.height / 2 - 400, "", requireStyle);
-        tetrisPhase = game.add.text(0, game.world.height / 2 - 400, "Tetris  Phase", requireStyle);
-        tetrisPhase.anchor.set(0.5);
-        tetrisPhase.setTextBounds(game.world.width / 2, 0, 400, 100);
-        game.add.tween(tetrisPhase).to({
-            alpha: 0
-        }, 1000, "Linear", true, 1000);
-        playerfase = true;
-            //STOP
+        //stop
     }
 
+    
     game.physics.arcade.collide(player, platforms);
 
     game.physics.arcade.collide(player, door, enterDoor);
@@ -1033,32 +1084,17 @@ Game.update = function () {
     //STOP
 
     /*
-     ** -- Swipe controls
-     */
+    ** -- Swipe controls
+    */
 
 
     if (allowPlayerMove) {
         timeMoving++;
-        
-        //NIEUW
-        if (playerfase == true && gameWonState == false) {
-            tetrisPhase = game.add.text(0, game.world.height / 2 - 400, "", requireStyle);
-            playerPhase = game.add.text(0, game.world.height / 2 - 400, "Player  Phase", requireStyle);
-            playerPhase.anchor.set(0.5);
-            playerPhase.setTextBounds(game.world.width / 2, 0, 400, 100);
-            game.add.tween(playerPhase).to({
-                alpha: 0
-            }, 1000, "Linear", true, 1000);
-            playerfase = false;
-        }
-        //STOP
-
-
-
+        timePlaying.text = Math.round((allowTimeToMove - timeMoving)/60);
 
         //***JORDY***
         changeColor();
-        //STOP
+            //STOP
 
         /*if (cursors.left.isDown)
         {
@@ -1123,7 +1159,7 @@ Game.update = function () {
 
     currentMovementTimer += this.time.elapsed;
     if (currentMovementTimer > movementLag) { // Prevent too rapid firing
-        if (pause.isDown) {
+        if(pause.isDown){
             managePauseScreen();
         }
 
@@ -1203,7 +1239,6 @@ function lifeCounter() {
     }
 }
 
-//NIEUW
 function decreaseLifePoints() {
 
     if (decreaseLife != 0) {
@@ -1219,21 +1254,14 @@ function decreaseLifePoints() {
     } else if (life == 1) {
         hart2.kill();
         hart1.alpha = 0;
-        heartTween = game.add.tween(hart1).to({
+        tween = game.add.tween(hart1).to({
             alpha: 1
         }, 300, "Linear", true, 0, -1);
-        heartTween.yoyo(true, 300);
+        tween.yoyo(true, 300);
     } else if (life <= 0) {
         hart1.kill();
     }
-
-    if (life > 1) {
-        heartTween = game.add.tween(hart1).to({
-            alpha: 1
-        }, 300, "Linear", true, 0, 1);
-    }
 }
-//STOP
 
 function changeColor() {
 
@@ -1252,11 +1280,9 @@ function changeColor() {
     }
 }
 
-//NIEUW
-
 function assignPowerUp() {
     //Select random power up
-    var myArray = ["Superjump\nAvailable", "Speed Increase\nAvailable", "Extra Life\nAvailable", "", "", "", ""];
+    var myArray = ["Jump Higher", "Faster Speed", "Extra Life", "", "", "", ""];
     var random = Math.floor(Math.random() * myArray.length);
 
     if (myArray[random] == "" && curPowerUp != undefined) {
@@ -1271,11 +1297,27 @@ function assignPowerUp() {
     }
 
     if (curPowerUp == 'Extra Life' && reuse == false) {
-        showText(curPowerUp);
+
+        var text = game.add.bitmapText(game.world.centerX, game.world.centerY, 'videogame', curPowerUp, 42);
+        text.anchor.set(0.5);
+        game.time.events.add(2000, function () {
+            game.add.tween(text).to({}, 1500, Phaser.Easing.Linear.None, true);
+            game.add.tween(text).to({
+                alpha: 0
+            }, 1000, Phaser.Easing.Linear.None, true);
+        }, this);
         tokens = 1;
 
     } else if (curPowerUp != 'Extra Life' && reuse == false && curPowerUp != '' && curPowerUp != undefined) {
-        showText(curPowerUp);
+
+        var text = game.add.bitmapText(game.world.centerX, game.world.centerY, 'videogame', curPowerUp, 42);
+        text.anchor.set(0.5);
+        game.time.events.add(2000, function () {
+            game.add.tween(text).to({}, 1500, Phaser.Easing.Linear.None, true);
+            game.add.tween(text).to({
+                alpha: 0
+            }, 1000, Phaser.Easing.Linear.None, true);
+        }, this);
         tokens = 1;
     }
 
@@ -1285,68 +1327,33 @@ function assignPowerUp() {
 
 function usePowerup() {
 
-    //Levens worden nu niet gebruikt bij volle, dus kan je nu sparen
-    //Text is verandered en de code daarvoor staat in een eigen functie
-    //Actieve powerup tonen
-
+    
     if (tokens == 1) {
-        if (curPowerUp == 'Superjump\nAvailable') {
-            //Reset Player Values if used
-            movementSpeed = 150;
-            playerJumpHeight = -450;
-            //Give Power
-            playerJumpHeight = -550;
-            //Reset vars
+        //Reset Values
+        movementSpeed = 150;
+        playerJumpHeight = -650;
+        if (curPowerUp == 'Jump Higher') {
+            playerJumpHeight = -750;
             tokens = 0;
             curPowerUp = undefined;
             console.log('Using higher jump');
-            //Show text
-            showPowerUp("Superjump");
-        } else if (curPowerUp == 'Speed Increase\nAvailable') {
-            //Reset Player Values if used
-            movementSpeed = 150;
-            playerJumpHeight = -450;
-            //Give Power
+        } else if (curPowerUp == 'Faster Speed') {
             movementSpeed = 300;
-            //Reset vars
             tokens = 0;
             curPowerUp = undefined;
             console.log('Improve movement speed');
-            //Show text
-            showPowerUp("Speed Increased");
-        } else if (curPowerUp == 'Extra Life\nAvailable') {
+        } else if (curPowerUp == 'Extra Life') {
             addLife();
+            tokens = 0;
+            curPowerUp = undefined;
+            console.log('Adding a life');
         }
     }
-}
-
-function showText(message) {
-    //var text = game.add.text(game.world.centerX, game.world.centerY, message, requireStyle);
-    var text = game.add.bitmapText(game.world.centerX, game.world.centerY, 'videogame', message, 42);
-    text.anchor.set(0.5);
-    text.align = 'center'
-    game.time.events.add(2000, function () {
-        game.add.tween(text).to({}, 1500, Phaser.Easing.Linear.None, true);
-        game.add.tween(text).to({
-            alpha: 0
-        }, 1000, Phaser.Easing.Linear.None, true);
-    }, this);
-}
-
-function showPowerUp(message) {
-    Ptext.text = message;
-    Ptext.anchor.set(0);
-    Ptext.align = 'center'
 }
 
 function addLife() {
 
     if (life < 3) {
-
-        //Reset Player Values if used
-        movementSpeed = 150;
-        playerJumpHeight = -450;
-
         //Add a life
         life += 1
             //Respawn sprite
@@ -1355,15 +1362,9 @@ function addLife() {
         } else if (life == 2) {
             hart2.revive();
         }
-
-        //Reset vars
-        showPowerUp("");
-        tokens = 0;
-        curPowerUp = undefined;
-
-        console.log('Adding a life');
     }
 }
+
 
 //STOP
 
