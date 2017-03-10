@@ -12,7 +12,7 @@ Menu.preload = function(){
     game.load.script('classic-arcade', 'js/webfontloader.js');
 
     title = {
-        font: '100px arcade',
+        font: '100px arcade', color: '#ffffff',
         fill: '#ffffff',
         align: 'center',
         boundsAlignH: "center",
@@ -20,7 +20,7 @@ Menu.preload = function(){
     };
 
     start = {
-        font: '48px arcade',
+        font: '48px arcade', color: '#ffffff',
         fill: '#ffffff',
         align: 'center',
         boundsAlignH: "center",
@@ -29,7 +29,7 @@ Menu.preload = function(){
 
     //adri's scale to device (credit to enzo bby)
     game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-
+    
     // load the fonts here for use in the different game states
     game.load.bitmapFont('gameover', 'assets/fonts/gameover.png', 'assets/fonts/gameover.fnt');
     game.load.bitmapFont('videogame', 'assets/fonts/videogame.png', 'assets/fonts/videogame.fnt'); // converted from ttf using http://kvazars.com/littera/
@@ -42,7 +42,7 @@ Menu.preload = function(){
 
     game.load.spritesheet('knopA','assets/knop_a_in_kleur_loop.png', 100,100)
     game.load.spritesheet('knopB','assets/knop_b_in_kleur_loop.png', 100,100)
-
+    
     // load background image by Yawuar
     game.load.image('bg', 'assets/background.jpg');
 
@@ -51,6 +51,11 @@ Menu.preload = function(){
 
     // load door
     game.load.spritesheet('door','assets/door_spritesheet.png', 60,64)
+
+    // load settings btn
+    game.load.image('settings', 'assets/settings.png');
+    
+    
 
     //end code
 };
@@ -70,6 +75,7 @@ Menu.create = function(){
 
     // check if game is pressed and start game
     game.input.onDown.add(chooseLevel, this);
+
     // title
     var titleTxt = game.add.text(0, game.world.height / 2 - 250, "tetris\nplatform", title);
     titleTxt.setTextBounds(game.world.width/2 - 200, 0, 400, 100);
@@ -87,10 +93,11 @@ Menu.create = function(){
     player.animations.add('right', [5, 6, 7, 8], 10, true);
     player.scale.setTo(2);
     game.physics.arcade.enable(player);
+    console.log(player.width);
 
     door.animations.add('open', [0,1,2,3,4,5,6,7,8,9], 10, false);
     door.animations.add('close', [9, 8, 7, 6, 5, 4, 3, 2, 1, 0], 20, false);
-
+    
     //end code
 };
 
@@ -103,12 +110,13 @@ Menu.update = function() {
     player.body.velocity.x = 100;
     player.animations.play('right');
     runPlayer();
+    //player.body.position.x = -50;
 
 }
 
 function runPlayer() {
-
-    if(Math.ceil(player.body.position.x) >= game.world.width / 2 - 50) {
+    
+    if(Math.ceil(player.body.position.x) >= game.world.width / 2 - 25) {
         player.body.velocity.x = 0;
         player.animations.stop();
         player.frame = 4;

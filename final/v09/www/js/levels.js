@@ -61,9 +61,13 @@
     	}
 
 			if(levelsArr) {
-				levelsArr[0].inputEnabled = true;
-				console.log("dit is de eerste element: " + levelsArr[0]);
-		    	levelsArr[0].events.onInputDown.add(startGame, this);
+				//console.log("dit is de eerste element: " + levelsArr[0]);
+		    	//levelsArr[0].events.onInputDown.add(startGame, this);
+
+					for(var i = 0; i < levelsArr.length; i++) {
+						levelsArr[i].inputEnabled = true;
+						levelsArr[i].events.onInputDown.add(startGame, this);
+					}
 		    	//als je op button 1 duwt, moet de globale variabele level = 1 zijn.
 		    	//button 2 maakt level = 2 etc.
 
