@@ -61,7 +61,9 @@ var playerJumpHeight = -450;
 var curPowerUp;
 var tokens = 0;
 var reuse = false;
+
 var Ptext;
+var heartTween;
 //STOP
 
 // the positions of each block of a tetromino with respect to its center (in cell coordinates)
@@ -1093,12 +1095,19 @@ function decreaseLifePoints() {
     } else if (life == 1) {
         hart2.kill();
         hart1.alpha = 0;
-        tween = game.add.tween(hart1).to({
+        heartTween = game.add.tween(hart1).to({
             alpha: 1
         }, 300, "Linear", true, 0, -1);
-        tween.yoyo(true, 300);
+        heartTween.yoyo(true, 300);
     } else if (life <= 0) {
         hart1.kill();
+    }
+    
+    if(life > 1)
+    {
+        heartTween = game.add.tween(hart1).to({
+            alpha: 1
+        }, 300, "Linear", true, 0, 1);
     }
 }
 
@@ -1186,6 +1195,7 @@ function usePowerup() {
 }
 
 function showText(message) {
+    //var text = game.add.text(game.world.centerX, game.world.centerY, message, requireStyle);
     var text = game.add.bitmapText(game.world.centerX, game.world.centerY, 'videogame', message, 42);
     text.anchor.set(0.5);
     text.align = 'center'
