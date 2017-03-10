@@ -3,6 +3,8 @@
 	var title, level;
 	var amountOfLevels = 9;
 	var levelsArr = [];
+	var goldStarArr = [];
+	var isLevelDisabled;
 
 	Levels.preload = function() {
 		title = {
@@ -28,7 +30,9 @@
 	};
 
 	Levels.create = function() {
-		levelsArr = [];
+		console.log("lol");
+		//levelsArr = [];
+		isLevelDisabled = false;
 		// add bg to game world
 		var bg = game.add.tileSprite(0, 0, 768, 1344, 'bg');
 		// calculate the difference between the width of the game and of background
@@ -47,8 +51,15 @@
     	for(var i = 1; i <= 3; i++) {
     		for(var j = 1; j <= 3; j++) {
     			levelNmb++;
-    			var star = game.add.sprite(-120 + (j*215), 195 + (i*225), 'starDisabled');
-    			star.scale.setTo(0.8);
+					//console.log(levelNmb);
+					if(levelNmb <= currentLevel) {
+						var star = game.add.sprite(-120 + (j*215), 195 + (i*225), 'star');
+	    			star.scale.setTo(0.8);
+
+					} else {
+						var star = game.add.sprite(-120 + (j*215), 195 + (i*225), 'starDisabled');
+	    			star.scale.setTo(0.8);
+					}
 
     			var text = game.add.text(0, 0, levelNmb, level);
 
@@ -60,27 +71,39 @@
     		}
     	}
 
-			if(levelsArr) {
-				//console.log("dit is de eerste element: " + levelsArr[0]);
-		    	//levelsArr[0].events.onInputDown.add(startGame, this);
+			// make first button a gold star
+			var xPos = levelsArr[0].position.x;
+			var yPos = levelsArr[0].position.y;
+			var goldStar = game.add.sprite(xPos, yPos, 'star');
+			goldStar.inputEnabled = true;
+			goldStar.events.onInputDown.add(startGame, this);
+			goldStar.scale.setTo(0.8);
+			levelsArr[0] = goldStar;
 
-					for(var i = 0; i < levelsArr.length; i++) {
-						levelsArr[i].inputEnabled = true;
-						levelsArr[i].events.onInputDown.add(startGame, this);
-					}
-		    	//als je op button 1 duwt, moet de globale variabele level = 1 zijn.
-		    	//button 2 maakt level = 2 etc.
-
-		    	//elke button moet via een for loop een object worden waar je op kan klikken
+			// check if currentLevel is set and currentLevel is smaller then the length of the array
+			if(currentLevel && currentLevel < levelsArr.length) {
+				if(!isLevelDisabled) {
+					// get position of stars
+					var xPos = levelsArr[currentLevel].position.x;
+					var yPos = levelsArr[currentLevel].position.y;
+					var goldStar = game.add.sprite(xPos, yPos, 'star');
+					goldStar.scale.setTo(0.8);
+					// put goldStar in Array
+				  levelsArr[currentLevel] = goldStar
+					levelsArr[currentLevel].inputEnabled = true;
+					levelsArr[currentLevel].events.onInputDown.add(startGame, this);
+				}
+				// Dit is de cheat code
+				/*var lvl = currentLevel;
+				var xPos = levelsArr[lvl - 1].position.x;
+				var yPos = levelsArr[lvl - 1].position.y;
+				var goldStar = game.add.sprite(xPos, yPos, 'star');
+				goldStar.scale.setTo(0.8);
+			  levelsArr[lvl] = goldStar
+				//console.log(levelsArr[lvl].position.x);
+			  //console.log("Dit is een arr = "levelsArr[firstStar]);
+	    	console.log("Dit is de gouden ster als de game gewonnen is = " + goldStar);*/
 			}
-
-
-    	  //   	    		    var firstStar = 1;
-		    	// var goldStar = game.add.sprite(-120 + (firstStar*175), 125 + (firstStar*175), 'star');
-		    	// levelsArr[firstStar] = goldStar
-		    	// console.log("Dit is een arr = "levelsArr[firstStar]);
-		    	// goldStar.scale.setTo(0.6);
-    	//console.log(levelsArr);
 
 	};
 

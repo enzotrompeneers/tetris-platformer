@@ -21,8 +21,9 @@ function placeSeparators(){
 }
 
 function startGame(e){
-  console.log(e);
-  //console.log("Dit is een event = " + this.events);
+  var getArrItem = levelsArr.indexOf(e);
+  currentLevel = getArrItem + 1;
+  isLevelDisabled = true;
   game.state.start('Game');
 }
 
