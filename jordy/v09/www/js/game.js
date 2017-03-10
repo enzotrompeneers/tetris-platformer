@@ -30,6 +30,10 @@ var queue = []; // contains the list the nbNext next tetrominoes to display
 var pauseState = false;
 var gameOverState = false;
 
+//enzo
+var gameWonState = false;
+//end enzo
+
 //Adrian's code
 var player;
 var platforms;
@@ -44,7 +48,7 @@ var currentLevel = 1;
 
 //enzo
 var requireStyle;
-var requireText = "finish   2   lines";
+var requireText = "get  to  the  door";
 
 // Swipe controls => Yawuar
 var currentX = 0;
@@ -62,8 +66,12 @@ var curPowerUp;
 var tokens = 0;
 var reuse = false;
 
+//NIEUW
 var Ptext;
 var heartTween;
+var tetrisPhase;
+var playerPhase;
+var playerfase = true;
 //STOP
 
 // the positions of each block of a tetromino with respect to its center (in cell coordinates)
@@ -378,7 +386,9 @@ Game.create = function () {
 
     loop.delay -= speedUp * 5;
 
+    //NIEUW
     Ptext = game.add.bitmapText(30, 100, 'videogame', '', 18);
+    //STOP
 };
 
 
@@ -441,10 +451,11 @@ function createPlayer() {
     player.position.y = 100;
 }
 
-function levelCreator(level)  {
-    currentLevel = level;
-    switch (level) {
+function levelCreator(currentLevel)  {
+    //currentLevel = level;
+    switch (currentLevel) {
     case 1:
+        requireText = "get  to  the  door";
         resetLevel();
         door.position.x = 150;
         door.position.y = 600;
@@ -455,6 +466,7 @@ function levelCreator(level)  {
         break;
 
     case 2:
+        requireText = "clear   2   lines";
         resetLevel();
         door.position.x = 300;
         door.position.y = 650;
@@ -464,12 +476,74 @@ function levelCreator(level)  {
         break;
 
     case 3:
+        requireText = "clear   4   lines";
         resetLevel();
         door.position.x = 300;
         door.position.y = 300;
 
         linesNeededToOpenDoor = 4;
         doorOpened = false;
+        break;
+
+    case 4:
+        requireText = "clear   2   lines";
+        resetLevel();
+        door.position.x = 300;
+        door.position.y = 650;
+
+        linesNeededToOpenDoor = 2;
+        doorOpened = false;
+        break;
+
+    case 5:
+        requireText = "clear   2   lines";
+        resetLevel();
+        door.position.x = 300;
+        door.position.y = 650;
+
+        linesNeededToOpenDoor = 2;
+        doorOpened = false;
+        break;
+
+    case 6:
+        requireText = "clear   2   lines";
+        resetLevel();
+        door.position.x = 300;
+        door.position.y = 650;
+
+        linesNeededToOpenDoor = 2;
+        doorOpened = false;
+        break;
+
+    case 7:
+        requireText = "clear   2   lines";
+        resetLevel();
+        door.position.x = 300;
+        door.position.y = 650;
+
+        linesNeededToOpenDoor = 2;
+        doorOpened = false;
+        break;
+
+    case 8:
+        requireText = "clear   2   lines";
+        resetLevel();
+        door.position.x = 300;
+        door.position.y = 650;
+
+        linesNeededToOpenDoor = 2;
+        doorOpened = false;
+        break;
+
+    case 9:
+        requireText = "clear   2   lines";
+        resetLevel();
+        door.position.x = 300;
+        door.position.y = 650;
+
+        linesNeededToOpenDoor = 2;
+        doorOpened = false;
+        break;
     }
 }
 
@@ -565,14 +639,15 @@ function enterDoor() {
         //console.log("congrats!");
         //gameOver();
         //levelCreator(2);
-        //currentLevel++;
 
         //game.state.start('Game');
 
         currentLevelsPlayed.push(1);
         localStorage.setItem('levels', currentLevelsPlayed);
+
+        gameWon();
         //game.state.start('Level');
-        chooseLevel();
+        //chooseLevel(); // --> deze wordt opgeroepen in gamewon()
     }
 
 }
@@ -882,12 +957,33 @@ function gameOver() {
     //Game.radio.playSound(Game.radio.gameOverSound);
     //stop
     makeShade();
-    var gameover = game.add.bitmapText(game.world.centerX, game.world.centerY, 'gameover', 'GAME OVER', 64);
-    gameover.anchor.setTo(0.5);
+    var gameOver = game.add.text(0, game.world.height / 2 - 400, "Game Over", requireStyle);
+    gameOver.setTextBounds(game.world.width / 2 - 200, 0, 400, 100);
+    //gameover.anchor.setTo(0.5);
     // Display the form to input your name for the leaderboard
     //commented out by adrian
     //document.getElementById("name").style.display =  "block";
 }
+
+// enzo won
+function gameWon() {
+    pauseState = true;
+    gameWonState = true;
+    game.input.keyboard.enabled = false;
+    Game.radio.music.pause();
+    //Game.radio.playSound(Game.radio.gameOverSound);
+    makeShade();
+    game.add.text(game.world.width / 2 - 330, game.world.height / 2 - 400, "congratulations", requireStyle);
+    game.add.text(game.world.width / 2 - 20, game.world.height / 2 - 200, ">>", requireStyle);
+
+    game.input.onDown.add(chooseLevel, this);
+    //var gameWon = game.add.bitmapText(game.world.centerX, game.world.centerY, 'gameover', 'CONGRATULATIONS',40);
+    //gameWon.anchor.setTo(0.5);
+    // Display the form to input your name for the leaderboard
+    //commented out by adrian
+    //document.getElementById("name").style.display =  "block";
+}
+// end enzo won
 
 Game.update = function () {
     //Adrian's code
@@ -911,9 +1007,18 @@ Game.update = function () {
         player.frame = 4;
         //jordy
         changeColor();
-        //stop
-    }
 
+        //NIEUW
+        playerPhase = game.add.text(0, game.world.height / 2 - 400, "", requireStyle);
+        tetrisPhase = game.add.text(0, game.world.height / 2 - 400, "Tetris  Phase", requireStyle);
+        tetrisPhase.anchor.set(0.5);
+        tetrisPhase.setTextBounds(game.world.width / 2, 0, 400, 100);
+        game.add.tween(tetrisPhase).to({
+            alpha: 0
+        }, 1000, "Linear", true, 1000);
+        playerfase = true;
+            //STOP
+    }
 
     game.physics.arcade.collide(player, platforms);
 
@@ -932,6 +1037,22 @@ Game.update = function () {
 
     if (allowPlayerMove) {
         timeMoving++;
+        
+        //NIEUW
+        if (playerfase == true) {
+            tetrisPhase = game.add.text(0, game.world.height / 2 - 400, "", requireStyle);
+            playerPhase = game.add.text(0, game.world.height / 2 - 400, "Player  Phase", requireStyle);
+            playerPhase.anchor.set(0.5);
+            playerPhase.setTextBounds(game.world.width / 2, 0, 400, 100);
+            game.add.tween(playerPhase).to({
+                alpha: 0
+            }, 1000, "Linear", true, 1000);
+            playerfase = false;
+        }
+        //STOP
+
+
+
 
         //***JORDY***
         changeColor();
@@ -1080,6 +1201,7 @@ function lifeCounter() {
     }
 }
 
+//NIEUW
 function decreaseLifePoints() {
 
     if (decreaseLife != 0) {
@@ -1102,14 +1224,14 @@ function decreaseLifePoints() {
     } else if (life <= 0) {
         hart1.kill();
     }
-    
-    if(life > 1)
-    {
+
+    if (life > 1) {
         heartTween = game.add.tween(hart1).to({
             alpha: 1
         }, 300, "Linear", true, 0, 1);
     }
 }
+//STOP
 
 function changeColor() {
 
@@ -1127,6 +1249,8 @@ function changeColor() {
         }
     }
 }
+
+//NIEUW
 
 function assignPowerUp() {
     //Select random power up
@@ -1238,7 +1362,6 @@ function addLife() {
         console.log('Adding a life');
     }
 }
-
 
 //STOP
 
