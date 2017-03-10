@@ -288,7 +288,7 @@ Game.create = function(){
 
     //adding player
     player = game.add.sprite(-50, 0, 'dude');
-    player.scale.setTo(2,2);
+    player.scale.setTo(1.8,1.8);
     game.physics.arcade.enable(player);
     player.body.bounce.y = 0.2;
     player.body.gravity.y = 1200;
@@ -457,6 +457,8 @@ Game.create = function(){
     timePlaying.setTextBounds(game.world.width/2-200, 0, 400, 100);
     timePlaying.alpha = 0;
 
+    gameWonState = false;
+
     //stop
 };
 
@@ -466,6 +468,7 @@ function resetLevel() {
     for (i = 0; i < numBlocksY; i++) {
         cleanLine(i);
     }
+    timeMoving = 0;
     allowPlayerMove = false;
     player.animations.stop();
     player.frame = 4;
@@ -481,6 +484,7 @@ function resetLevel() {
     reuse = false;
     life = 3;
 
+    //amountOfLinesDisplay.text = completedLines+"/"+linesNeededToOpenDoor;
     showOverlay();
     createPlayer();
 }
@@ -511,7 +515,7 @@ function createPlayer() {
 
     //player = game.add.sprite(positionX, 100, 'dude');
     player.position.x = positionX;
-    player.position.y = 100;
+    player.position.y = 200;
 }
 
 function levelCreator(currentLevel) {
@@ -1010,6 +1014,7 @@ function managePauseScreen(){
 }
 
 function gameOver(){
+    resetLevel();
     gameOverState = true;
     game.input.keyboard.enabled = false;
     Game.radio.music.pause();
@@ -1020,13 +1025,13 @@ function gameOver(){
     var gameOver = game.add.text(0, game.world.height / 2 - 400, "Game Over", gameOverStyle);
     gameOver.setTextBounds(game.world.width/2 - 200, 0, 400, 100);
 
-    replayButton = game.add.sprite(game.world.width/10*3,game.world.height/5*3,'replay');
+    /*replayButton = game.add.sprite(game.world.width/10*3,game.world.height/5*3,'replay');
     replayButton.scale.setTo(0.2,0.2);
     replayButton.anchor.setTo(0.5);
     replayButton.inputEnabled = true;
-    replayButton.events.onInputDown.add(startGame, this);
+    replayButton.events.onInputDown.add(startGame, this);*/
 
-    hamburger = game.add.sprite(game.world.width/10*7,game.world.height/5*3,'hamburger');
+    hamburger = game.add.sprite(game.world.width/10*5,game.world.height/5*3,'hamburger');
     hamburger.scale.setTo(0.4,0.4);
     hamburger.anchor.setTo(0.5);
     hamburger.inputEnabled = true;
@@ -1365,9 +1370,9 @@ function usePowerup() {
         if (curPowerUp == 'Superjump\nAvailable') {
             //Reset Player Values if used
             movementSpeed = 150;
-            playerJumpHeight = -450;
+            playerJumpHeight = -650;
             //Give Power
-            playerJumpHeight = -550;
+            playerJumpHeight = -800;
             //Reset vars
             tokens = 0;
             curPowerUp = undefined;
@@ -1377,7 +1382,7 @@ function usePowerup() {
         } else if (curPowerUp == 'Speed Increase\nAvailable') {
             //Reset Player Values if used
             movementSpeed = 150;
-            playerJumpHeight = -450;
+            playerJumpHeight = -650;
             //Give Power
             movementSpeed = 300;
             //Reset vars
@@ -1417,7 +1422,7 @@ function addLife() {
 
         //Reset Player Values if used
         movementSpeed = 150;
-        playerJumpHeight = -450;
+        playerJumpHeight = -650;
 
         //Add a life
         life += 1

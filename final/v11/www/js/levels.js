@@ -31,6 +31,8 @@
 
 	Levels.create = function() {
 		levelsArr = []
+
+    	gameWonState = false;
 		//console.log("lol");
 		//levelsArr = [];
 		isLevelDisabled = false;
