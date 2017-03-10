@@ -29,7 +29,7 @@ Menu.preload = function(){
 
     //adri's scale to device (credit to enzo bby)
     game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
-    
+
     // load the fonts here for use in the different game states
     game.load.bitmapFont('gameover', 'assets/fonts/gameover.png', 'assets/fonts/gameover.fnt');
     game.load.bitmapFont('videogame', 'assets/fonts/videogame.png', 'assets/fonts/videogame.fnt'); // converted from ttf using http://kvazars.com/littera/
@@ -42,7 +42,7 @@ Menu.preload = function(){
 
     game.load.spritesheet('knopA','assets/knop_a_in_kleur_loop.png', 100,100)
     game.load.spritesheet('knopB','assets/knop_b_in_kleur_loop.png', 100,100)
-    
+
     // load background image by Yawuar
     game.load.image('bg', 'assets/background.jpg');
 
@@ -54,8 +54,8 @@ Menu.preload = function(){
 
     // load settings btn
     game.load.image('settings', 'assets/settings.png');
-    
-    
+
+
 
     //end code
 };
@@ -93,11 +93,10 @@ Menu.create = function(){
     player.animations.add('right', [5, 6, 7, 8], 10, true);
     player.scale.setTo(2);
     game.physics.arcade.enable(player);
-    console.log(player.width);
 
     door.animations.add('open', [0,1,2,3,4,5,6,7,8,9], 10, false);
     door.animations.add('close', [9, 8, 7, 6, 5, 4, 3, 2, 1, 0], 20, false);
-    
+
     //end code
 };
 
@@ -115,8 +114,7 @@ Menu.update = function() {
 }
 
 function runPlayer() {
-    
-    if(Math.ceil(player.body.position.x) >= game.world.width / 2 - 25) {
+    if(Math.ceil(player.body.position.x) >= game.world.width / 2 - (player.width / 2)) {
         player.body.velocity.x = 0;
         player.animations.stop();
         player.frame = 4;
