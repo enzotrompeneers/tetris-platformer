@@ -999,7 +999,9 @@ Game.update = function () {
         player.frame = 4;
     }
 
-    if (timeMoving >= allowTimeToMove) {
+    //NIEUW
+    if (timeMoving >= allowTimeToMove && gameWonState == false) {
+    //STOP
         allowPlayerMove = false;
         timeMoving = 0;
         fallenTetrominoes = -1;
@@ -1039,7 +1041,7 @@ Game.update = function () {
         timeMoving++;
         
         //NIEUW
-        if (playerfase == true) {
+        if (playerfase == true && gameWonState == false) {
             tetrisPhase = game.add.text(0, game.world.height / 2 - 400, "", requireStyle);
             playerPhase = game.add.text(0, game.world.height / 2 - 400, "Player  Phase", requireStyle);
             playerPhase.anchor.set(0.5);
