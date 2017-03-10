@@ -44,7 +44,7 @@ var fallenTetrominoes = 0;
 var door;
 var linesNeededToOpenDoor = 2;
 var doorOpened = false;
-var currentLevel = 1;
+var currentLevel;
 
 //enzo
 var requireStyle;
@@ -121,7 +121,7 @@ function Tetromino(){
             var x = c_x + offsets[this.shape][i][0];
             var y = c_y + offsets[this.shape][i][1];
             var sprite = game.add.sprite(x * blockSize, y * blockSize, 'blocks', this.color);
-            
+
             //adrian's code
             platforms.add(sprite);
             sprite.body.immovable = true;
@@ -212,7 +212,7 @@ Game.preload = function() {
 Game.create = function(){
     //adri adding background & control panel
     background = game.add.sprite(0,0,'background');
-    background.scale.setTo(0.71,0.7); 
+    background.scale.setTo(0.71,0.7);
 
     joystick = game.add.sprite(75, game.world.height - 275, 'joystick');
     joystick.scale.setTo(1.4,1.4);
@@ -271,7 +271,7 @@ Game.create = function(){
     player.animations.add('left', [0, 1, 2, 3], 10, true);
     player.animations.add('right', [5, 6, 7, 8], 10, true);
     player.frame = 4;
-    
+
     //adding door
     door = game.add.sprite(300, 700, 'door');
     door.scale.setTo(2,2);
@@ -551,7 +551,7 @@ handlePointerDown = function(pointer){
             }
         }
     }
-    
+
     if (insideRight) {
         //moving player right
         joystick.animations.play('moveRight');
@@ -589,7 +589,7 @@ handlePointerDown = function(pointer){
     }else if(insideB && allowPlayerMove){
             usePowerup();
     }
-} 
+}
 //end of adrian's code
 
 
@@ -622,9 +622,6 @@ function enterDoor(){
         //console.log("congrats!");
         //gameOver();
         //levelCreator(2);
-
-        //game.state.start('Game');
-
         currentLevelsPlayed.push(1);
         localStorage.setItem('levels', currentLevelsPlayed);
 
@@ -891,8 +888,8 @@ function fall(){
         } else {
             manageTetrominos();
         }
-        
-        
+
+
 
         //end of code
 
@@ -975,7 +972,7 @@ Game.update = function(){
         player.animations.stop();
         player.frame = 4;
     }
-    
+
     if (timeMoving >= allowTimeToMove) {
         allowPlayerMove = false;
         timeMoving = 0;
@@ -987,7 +984,7 @@ Game.update = function(){
         //stop
     }
 
-    
+
     game.physics.arcade.collide(player, platforms);
 
     game.physics.arcade.collide(player, door, enterDoor);
@@ -1241,7 +1238,7 @@ function assignPowerUp() {
 
 function usePowerup() {
 
-    
+
     if (tokens == 1) {
         //Reset Values
         movementSpeed = 150;
