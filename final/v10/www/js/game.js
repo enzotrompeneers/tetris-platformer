@@ -70,6 +70,14 @@ var tokens = 0;
 var reuse = false;
 //STOP
 
+//NIEUW
+var Ptext;
+var heartTween;
+var tetrisPhase;
+var playerPhase;
+var playerfase = true;
+//STOP
+
 // the positions of each block of a tetromino with respect to its center (in cell coordinates)
 var offsets = {
     0 : [[0,-1],[0,0],[0,1],[1,1]], // L
@@ -393,6 +401,10 @@ Game.create = function(){
     Game.radio.music = game.add.audio('music');
     Game.radio.music.volume = 0.2; //adri turned 0.2 -> 0.0
     Game.radio.music.loopFull();
+
+    //NIEUW
+    Ptext = game.add.bitmapText(30, 100, 'videogame', '', 18);
+    //STOP
 
     loop.delay = 500;
 
@@ -1060,7 +1072,9 @@ Game.update = function(){
         player.frame = 4;
     }
     
-    if (timeMoving >= allowTimeToMove) {
+    //NIEUW
+    if (timeMoving >= allowTimeToMove && gameWonState == false) {
+    //STOP
         timePlaying.alpha = 0;
         allowPlayerMove = false;
         timeMoving = 0;
@@ -1069,9 +1083,18 @@ Game.update = function(){
         player.frame = 4;
         //jordy
         changeColor();
-        //stop
-    }
 
+        //NIEUW
+        playerPhase = game.add.text(0, game.world.height / 2 - 400, "", requireStyle);
+        tetrisPhase = game.add.text(0, game.world.height / 2 - 400, "Tetris  Phase", requireStyle);
+        //tetrisPhase.anchor.set(0.5);
+        tetrisPhase.setTextBounds(game.world.width / 2-200, 0, 400, 100);
+        game.add.tween(tetrisPhase).to({
+            alpha: 0
+        }, 1000, "Linear", true, 1000);
+        playerfase = true;
+            //STOP
+    }
     
     game.physics.arcade.collide(player, platforms);
 
@@ -1091,6 +1114,19 @@ Game.update = function(){
     if (allowPlayerMove) {
         timeMoving++;
         timePlaying.text = Math.round((allowTimeToMove - timeMoving)/60);
+
+        //NIEUW
+        if (playerfase == true && gameWonState == false) {
+            tetrisPhase = game.add.text(0, game.world.height / 2 - 400, "", requireStyle);
+            playerPhase = game.add.text(0, game.world.height / 2 - 400, "Player  Phase", requireStyle);
+            //playerPhase.anchor.set(0.5);
+            playerPhase.setTextBounds(game.world.width / 2-200, 0, 400, 100);
+            game.add.tween(playerPhase).to({
+                alpha: 0
+            }, 1000, "Linear", true, 1000);
+            playerfase = false;
+        }
+        //STOP
 
         //***JORDY***
         changeColor();
@@ -1239,6 +1275,7 @@ function lifeCounter() {
     }
 }
 
+//NIEUW
 function decreaseLifePoints() {
 
     if (decreaseLife != 0) {
@@ -1254,14 +1291,21 @@ function decreaseLifePoints() {
     } else if (life == 1) {
         hart2.kill();
         hart1.alpha = 0;
-        tween = game.add.tween(hart1).to({
+        heartTween = game.add.tween(hart1).to({
             alpha: 1
         }, 300, "Linear", true, 0, -1);
-        tween.yoyo(true, 300);
+        heartTween.yoyo(true, 300);
     } else if (life <= 0) {
         hart1.kill();
     }
+
+    if (life > 1) {
+        heartTween = game.add.tween(hart1).to({
+            alpha: 1
+        }, 300, "Linear", true, 0, 1);
+    }
 }
+//STOP
 
 function changeColor() {
 
@@ -1280,9 +1324,11 @@ function changeColor() {
     }
 }
 
+//NIEUW
+
 function assignPowerUp() {
     //Select random power up
-    var myArray = ["Jump Higher", "Faster Speed", "Extra Life", "", "", "", ""];
+    var myArray = ["Superjump\nAvailable", "Speed Increase\nAvailable", "Extra Life\nAvailable", "", "", "", ""];
     var random = Math.floor(Math.random() * myArray.length);
 
     if (myArray[random] == "" && curPowerUp != undefined) {
@@ -1297,27 +1343,11 @@ function assignPowerUp() {
     }
 
     if (curPowerUp == 'Extra Life' && reuse == false) {
-
-        var text = game.add.bitmapText(game.world.centerX, game.world.centerY, 'videogame', curPowerUp, 42);
-        text.anchor.set(0.5);
-        game.time.events.add(2000, function () {
-            game.add.tween(text).to({}, 1500, Phaser.Easing.Linear.None, true);
-            game.add.tween(text).to({
-                alpha: 0
-            }, 1000, Phaser.Easing.Linear.None, true);
-        }, this);
+        showText(curPowerUp);
         tokens = 1;
 
     } else if (curPowerUp != 'Extra Life' && reuse == false && curPowerUp != '' && curPowerUp != undefined) {
-
-        var text = game.add.bitmapText(game.world.centerX, game.world.centerY, 'videogame', curPowerUp, 42);
-        text.anchor.set(0.5);
-        game.time.events.add(2000, function () {
-            game.add.tween(text).to({}, 1500, Phaser.Easing.Linear.None, true);
-            game.add.tween(text).to({
-                alpha: 0
-            }, 1000, Phaser.Easing.Linear.None, true);
-        }, this);
+        showText(curPowerUp);
         tokens = 1;
     }
 
@@ -1327,33 +1357,68 @@ function assignPowerUp() {
 
 function usePowerup() {
 
-    
+    //Levens worden nu niet gebruikt bij volle, dus kan je nu sparen
+    //Text is verandered en de code daarvoor staat in een eigen functie
+    //Actieve powerup tonen
+
     if (tokens == 1) {
-        //Reset Values
-        movementSpeed = 150;
-        playerJumpHeight = -650;
-        if (curPowerUp == 'Jump Higher') {
-            playerJumpHeight = -750;
+        if (curPowerUp == 'Superjump\nAvailable') {
+            //Reset Player Values if used
+            movementSpeed = 150;
+            playerJumpHeight = -450;
+            //Give Power
+            playerJumpHeight = -550;
+            //Reset vars
             tokens = 0;
             curPowerUp = undefined;
             console.log('Using higher jump');
-        } else if (curPowerUp == 'Faster Speed') {
+            //Show text
+            showPowerUp("Superjump");
+        } else if (curPowerUp == 'Speed Increase\nAvailable') {
+            //Reset Player Values if used
+            movementSpeed = 150;
+            playerJumpHeight = -450;
+            //Give Power
             movementSpeed = 300;
+            //Reset vars
             tokens = 0;
             curPowerUp = undefined;
             console.log('Improve movement speed');
-        } else if (curPowerUp == 'Extra Life') {
+            //Show text
+            showPowerUp("Speed Increased");
+        } else if (curPowerUp == 'Extra Life\nAvailable') {
             addLife();
-            tokens = 0;
-            curPowerUp = undefined;
-            console.log('Adding a life');
         }
     }
+}
+
+function showText(message) {
+    //var text = game.add.text(game.world.centerX, game.world.centerY, message, requireStyle);
+    var text = game.add.bitmapText(game.world.centerX, game.world.centerY, 'videogame', message, 42);
+    text.anchor.set(0.5);
+    text.align = 'center'
+    game.time.events.add(2000, function () {
+        game.add.tween(text).to({}, 1500, Phaser.Easing.Linear.None, true);
+        game.add.tween(text).to({
+            alpha: 0
+        }, 1000, Phaser.Easing.Linear.None, true);
+    }, this);
+}
+
+function showPowerUp(message) {
+    Ptext.text = message;
+    Ptext.anchor.set(0);
+    Ptext.align = 'center'
 }
 
 function addLife() {
 
     if (life < 3) {
+
+        //Reset Player Values if used
+        movementSpeed = 150;
+        playerJumpHeight = -450;
+
         //Add a life
         life += 1
             //Respawn sprite
@@ -1362,8 +1427,17 @@ function addLife() {
         } else if (life == 2) {
             hart2.revive();
         }
+
+        //Reset vars
+        showPowerUp("");
+        tokens = 0;
+        curPowerUp = undefined;
+
+        console.log('Adding a life');
     }
 }
+
+//STOP
 
 
 //STOP
