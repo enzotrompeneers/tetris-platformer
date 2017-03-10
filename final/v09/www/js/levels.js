@@ -5,6 +5,7 @@
 	var levelsArr = [];
 	var goldStarArr = [];
 	var isLevelDisabled;
+	var levelsCompleted = [];
 
 	Levels.preload = function() {
 		title = {
@@ -48,18 +49,13 @@
     	var text = game.add.text(0, 150, "levels", title);
     	text.setTextBounds(game.world.width/2 - 200, 0, 400, 100);
     	var levelNmb = 0;
-    	for(var i = 1; i <= 3; i++) {
+			for(var i = 1; i <= 3; i++) {
     		for(var j = 1; j <= 3; j++) {
     			levelNmb++;
-					//console.log(levelNmb);
-					if(levelNmb <= currentLevel) {
-						var star = game.add.sprite(-120 + (j*215), 195 + (i*225), 'star');
-	    			star.scale.setTo(0.8);
-
-					} else {
-						var star = game.add.sprite(-120 + (j*215), 195 + (i*225), 'starDisabled');
-	    			star.scale.setTo(0.8);
-					}
+					var star = game.add.sprite(-120 + (j*215), 195 + (i*225), 'star');
+	    		star.scale.setTo(0.8);
+					star.inputEnabled = true;
+					star.events.onInputDown.add(startGame, this);
 
     			var text = game.add.text(0, 0, levelNmb, level);
 
@@ -71,23 +67,16 @@
     		}
     	}
 
-			// make first button a gold star
-			var xPos = levelsArr[0].position.x;
-			var yPos = levelsArr[0].position.y;
-			var goldStar = game.add.sprite(xPos, yPos, 'star');
-			goldStar.inputEnabled = true;
-			goldStar.events.onInputDown.add(startGame, this);
-			goldStar.scale.setTo(0.8);
-			levelsArr[0] = goldStar;
-
-			// check if currentLevel is set and currentLevel is smaller then the length of the array
-			if(currentLevel && currentLevel < levelsArr.length) {
+			// check if currentLevel is set and currentLevel is smaller than the length of the array
+			/*if(currentLevel && currentLevel < levelsArr.length) {
 				if(!isLevelDisabled) {
 					// get position of stars
 					var xPos = levelsArr[currentLevel].position.x;
 					var yPos = levelsArr[currentLevel].position.y;
 					var goldStar = game.add.sprite(xPos, yPos, 'star');
 					goldStar.scale.setTo(0.8);
+
+
 					// put goldStar in Array
 				  levelsArr[currentLevel] = goldStar
 					levelsArr[currentLevel].inputEnabled = true;
@@ -102,8 +91,9 @@
 			  levelsArr[lvl] = goldStar
 				//console.log(levelsArr[lvl].position.x);
 			  //console.log("Dit is een arr = "levelsArr[firstStar]);
-	    	console.log("Dit is de gouden ster als de game gewonnen is = " + goldStar);*/
-			}
+	    	console.log("Dit is de gouden ster als de game gewonnen is = " + goldStar);
+			}*/
+
 
 	};
 

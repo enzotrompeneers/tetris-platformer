@@ -622,8 +622,6 @@ function enterDoor(){
         //console.log("congrats!");
         //gameOver();
         //levelCreator(2);
-        currentLevelsPlayed.push(1);
-        localStorage.setItem('levels', currentLevelsPlayed);
 
         gameWon();
         //game.state.start('Level');
@@ -951,6 +949,8 @@ function gameWon(){
     game.add.text(game.world.width / 2 - 20, game.world.height / 2 - 200, ">>", requireStyle);
 
     game.input.onDown.add(chooseLevel, this);
+
+
     //var gameWon = game.add.bitmapText(game.world.centerX, game.world.centerY, 'gameover', 'CONGRATULATIONS',40);
     //gameWon.anchor.setTo(0.5);
     // Display the form to input your name for the leaderboard
